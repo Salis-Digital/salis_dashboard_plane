@@ -65,3 +65,6 @@ export {
   type SaturationCurve,
   SHADE_STOPS,
 } from "./constants";
+
+// Theme mode helpers
+export { resolveGeneralTheme } from "./resolve-general-theme";

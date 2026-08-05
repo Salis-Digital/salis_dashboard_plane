@@ -16,14 +16,17 @@ import globalStyles from "@/styles/globals.css?url";
 import { AppProviders } from "@/providers";
 import type { Route } from "./+types/root";
 // fonts
+// oxlint-disable-next-line import/no-unassigned-import -- CSS side-effect font load
 import "@fontsource-variable/inter";
 import interVariableWoff2 from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
+// oxlint-disable-next-line import/no-unassigned-import -- CSS side-effect font load
 import "@fontsource/material-symbols-rounded";
+// oxlint-disable-next-line import/no-unassigned-import -- CSS side-effect font load
 import "@fontsource/ibm-plex-mono";
+import { SITE_DESCRIPTION, SITE_NAME } from "@plane/constants";
 
-const APP_TITLE = "Plane | Simple, extensible, open-source project management tool.";
-const APP_DESCRIPTION =
-  "Open-source project management tool to manage work items, sprints, and product roadmaps with peace of mind.";
+const APP_TITLE = SITE_NAME;
+const APP_DESCRIPTION = SITE_DESCRIPTION;
 
 export const links: LinksFunction = () => [
   { rel: "apple-touch-icon", sizes: "180x180", href: appleTouchIcon },
@@ -88,7 +91,8 @@ export function HydrateFallback() {
   );
 }
 
-export function ErrorBoundary({ error: _error }: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  console.error("[Admin ErrorBoundary]", error);
   return (
     <div>
       <p>Something went wrong.</p>

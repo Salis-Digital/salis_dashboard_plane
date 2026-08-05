@@ -146,20 +146,20 @@ export const NEUTRAL_COLORS = {
   black: "#0f0f0f", // oklch(0.1472 0.0034 230.83) ≈ #0f0f0f
 } as const;
 
-// Brand colors (light theme accent)
+// Brand colors (light theme accent) — Cashatti seed #DD4A48
 export const BRAND_COLORS = {
-  default: "#3f76ff", // oklch(0.4799 0.1158 242.91) - primary accent blue
-  100: "#f5f8ff",
-  200: "#e8f0ff",
-  300: "#d1e1ff",
-  400: "#b3d0ff",
-  500: "#8ab8ff",
-  600: "#5c9aff",
-  700: "#3f76ff",
-  900: "#2952b3",
-  1000: "#1e3d80",
-  1100: "#142b5c",
-  1200: "#0d1f40",
+  default: "#dd4a48", // oklch(0.6139 0.1838 25.02)
+  100: "#ffe8e4",
+  200: "#ffd7d0",
+  300: "#ffbeb6",
+  400: "#ff9b93",
+  500: "#fb817a",
+  600: "#ed6862",
+  700: "#f07f77",
+  900: "#c13234",
+  1000: "#a51e24",
+  1100: "#690005",
+  1200: "#400000",
 } as const;
 
 // Semantic text colors
@@ -181,7 +181,7 @@ export const BACKGROUND_COLORS = {
   layer1: NEUTRAL_COLORS[200], // --bg-layer-1
   layer2: NEUTRAL_COLORS.white, // --bg-layer-2
   layer3: NEUTRAL_COLORS[300], // --bg-layer-3
-  accentSubtle: "#f5f8ff", // --bg-accent-subtle (brand-100)
+  accentSubtle: "#ffe8e4", // --bg-accent-subtle (brand-100)
 } as const;
 
 // Semantic border colors

@@ -4,6 +4,8 @@
 
 This guide explains the semantic design system philosophy for building consistent, maintainable UIs. The system is built on three core concepts: **Canvas**, **Surface**, and **Layer**.
 
+**Fork brand:** Cashatti primary `#DD4A48` is injected via `--brand-*` in `variables.css`. See [docs/brand-theme.md](../../docs/brand-theme.md) for Figma → token mapping (light/dark).
+
 ## Core Concepts
 
 ### 1. Canvas (`bg-canvas`)
