@@ -1,0 +1,44 @@
+---
+description: Absolute dos and don'ts for this Plane fork — setup, code, git/PR, UI, i18n, security
+alwaysApply: true
+---
+
+# Fork Dos and Don'ts
+
+Full reference: [docs/fork-guidelines.md](docs/fork-guidelines.md)
+
+## Setup
+
+- Node `>=22.18.0`, pnpm `11.3.0`, Docker, ≥12 GB RAM
+- `./setup.sh` → `docker compose -f docker-compose-local.yml up` → `pnpm dev` (web:3000, admin:3001)
+- Before ship: `pnpm check` (or `pnpm fix` + `pnpm check:types`); API tests via docker-compose-test.yml
+
+## Code — DO
+
+- Imports: `workspace:*` internal, `catalog:` external
+- Strict TypeScript; oxfmt + OxLint (root `.oxlintrc.json` only)
+- camelCase / PascalCase; MobX in `packages/shared-state`; UI in `@plane/ui`
+- Unit tests for every feature/fix
+- Design: Canvas → Surface → Layer; semantic text/border tokens; `bg-layer-X hover:bg-layer-X-hover`
+
+## Code — DON'T
+
+- No one-off ESLint configs; avoid `eslint-disable` unless necessary
+- `bg-canvas` only at app root; no nested same-plane surfaces; match layer to surface
+- No hardcoded colors when semantic tokens exist; no shipping without tests
+
+## Git / PR — DO
+
+- Branch: `<type>/<work-item-id>-<short-description>` (lowercase ID; don't invent IDs)
+- Husky: oxfmt + OxLint `--deny-warnings` — fix and recommit; never skip hooks
+- PR base: `preview`; title: `[WORK-ITEM-ID] <type>: <summary>`; fill PR template
+
+## Git / PR — DON'T
+
+- No `--no-verify`; no committing `.env`/secrets; no work-item ID at end of branch name
+
+## i18n / security
+
+- New keys in **all** locales; preserve ICU + full CLDR plurals
+- Never translate brand/DNT terms (Plane, Power K, Intake, plan tiers, etc.)
+- Security: report privately to security@plane.so only
