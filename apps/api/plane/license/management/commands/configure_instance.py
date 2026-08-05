@@ -40,7 +40,7 @@ class Command(BaseCommand):
             else:
                 self.stdout.write(self.style.WARNING(f"{obj.key} configuration already exists"))
 
-        keys = ["IS_GOOGLE_ENABLED", "IS_GITHUB_ENABLED", "IS_GITLAB_ENABLED", "IS_GITEA_ENABLED"]
+        keys = ["IS_GOOGLE_ENABLED", "IS_GITHUB_ENABLED", "IS_GITLAB_ENABLED", "IS_GITEA_ENABLED", "IS_SALIS_ENABLED"]
         if not InstanceConfiguration.objects.filter(key__in=keys).exists():
             for key in keys:
                 if key == "IS_GOOGLE_ENABLED":
@@ -147,6 +147,34 @@ class Command(BaseCommand):
                         is_encrypted=False,
                     )
                     self.stdout.write(self.style.SUCCESS(f"{key} loaded with value from environment variable."))
+                if key == "IS_SALIS_ENABLED":
+                    (SALIS_CLIENT_ID,) = get_configuration_value(
+                        [
+                            {
+                                "key": "SALIS_CLIENT_ID",
+                                "default": os.environ.get("SALIS_CLIENT_ID", "salisplane"),
+                            },
+                        ]
+                    )
+                    value = "1" if bool(SALIS_CLIENT_ID) and os.environ.get("IS_SALIS_ENABLED", "1") != "0" else "0"
+                    InstanceConfiguration.objects.create(
+                        key="IS_SALIS_ENABLED",
+                        value=value,
+                        category="AUTHENTICATION",
+                        is_encrypted=False,
+                    )
+                    self.stdout.write(self.style.SUCCESS(f"{key} loaded with value from environment variable."))
         else:
             for key in keys:
                 self.stdout.write(self.style.WARNING(f"{key} configuration already exists"))
+
+        # Ensure Salis toggle exists on upgraded instances
+        if not InstanceConfiguration.objects.filter(key="IS_SALIS_ENABLED").exists():
+            value = "0" if os.environ.get("IS_SALIS_ENABLED", "1") == "0" else "1"
+            InstanceConfiguration.objects.create(
+                key="IS_SALIS_ENABLED",
+                value=value,
+                category="AUTHENTICATION",
+                is_encrypted=False,
+            )
+            self.stdout.write(self.style.SUCCESS("IS_SALIS_ENABLED loaded with value from environment variable."))

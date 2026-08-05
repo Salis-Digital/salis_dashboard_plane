@@ -24,6 +24,7 @@ import { GithubConfiguration } from "@/components/authentication/github-config";
 import { GitlabConfiguration } from "@/components/authentication/gitlab-config";
 import { GoogleConfiguration } from "@/components/authentication/google-config";
 import { PasswordLoginConfiguration } from "@/components/authentication/password-config-switch";
+import { SalisConfiguration } from "@/components/authentication/salis-config";
 
 // Authentication methods
 export const getCoreAuthenticationModesMap: (
@@ -49,6 +50,18 @@ export const getCoreAuthenticationModesMap: (
     icon: <KeyRound className="h-6 w-6 p-0.5 text-tertiary" />,
     config: <PasswordLoginConfiguration disabled={disabled} updateConfig={updateConfig} />,
     enabledConfigKey: "ENABLE_EMAIL_PASSWORD",
+  },
+  salis: {
+    key: "salis",
+    name: "Salis IAM",
+    description: "Require members to log in or sign up through iam.salis.app. Token claims supply email and name.",
+    icon: (
+      <span className="flex h-5 w-5 items-center justify-center rounded-sm bg-[#C45C26] text-[10px] font-bold text-white">
+        S
+      </span>
+    ),
+    config: <SalisConfiguration disabled={disabled} updateConfig={updateConfig} />,
+    enabledConfigKey: "IS_SALIS_ENABLED",
   },
   google: {
     key: "google",

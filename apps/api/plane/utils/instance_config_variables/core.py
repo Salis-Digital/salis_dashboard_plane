@@ -144,6 +144,45 @@ gitea_config_variables = [
     },
 ]
 
+salis_config_variables = [
+    {
+        "key": "IS_SALIS_ENABLED",
+        "value": os.environ.get("IS_SALIS_ENABLED", "1"),
+        "category": "SALIS",
+        "is_encrypted": False,
+    },
+    {
+        "key": "SALIS_CLIENT_ID",
+        "value": os.environ.get("SALIS_CLIENT_ID", "salisplane"),
+        "category": "SALIS",
+        "is_encrypted": False,
+    },
+    {
+        "key": "SALIS_IAM_HOST",
+        "value": os.environ.get("SALIS_IAM_HOST", "https://iam.salis.app"),
+        "category": "SALIS",
+        "is_encrypted": False,
+    },
+    {
+        "key": "SALIS_API_BASE",
+        "value": os.environ.get("SALIS_API_BASE", "https://api2.saalees.com"),
+        "category": "SALIS",
+        "is_encrypted": False,
+    },
+    {
+        "key": "SALIS_TENANT_ID",
+        "value": os.environ.get("SALIS_TENANT_ID", "91"),
+        "category": "SALIS",
+        "is_encrypted": False,
+    },
+    {
+        "key": "SALIS_REDIRECT_URI",
+        "value": os.environ.get("SALIS_REDIRECT_URI", ""),
+        "category": "SALIS",
+        "is_encrypted": False,
+    },
+]
+
 smtp_config_variables = [
     {
         "key": "ENABLE_SMTP",
@@ -239,6 +278,7 @@ core_config_variables = [
     *github_config_variables,
     *gitlab_config_variables,
     *gitea_config_variables,
+    *salis_config_variables,
     *smtp_config_variables,
     *llm_config_variables,
     *unsplash_config_variables,

@@ -44,6 +44,9 @@ from .views import (
     GiteaOauthInitiateEndpoint,
     GiteaCallbackSpaceEndpoint,
     GiteaOauthInitiateSpaceEndpoint,
+    SalisOauthInitiateEndpoint,
+    SalisCallbackEndpoint,
+    SalisCompleteEndpoint,
 )
 
 urlpatterns = [
@@ -150,4 +153,8 @@ urlpatterns = [
         GiteaCallbackSpaceEndpoint.as_view(),
         name="space-gitea-callback",
     ),
+    ## Salis IAM Oauth (implicit token flow)
+    path("salis/", SalisOauthInitiateEndpoint.as_view(), name="salis-initiate"),
+    path("salis/callback/", SalisCallbackEndpoint.as_view(), name="salis-callback"),
+    path("salis/complete/", SalisCompleteEndpoint.as_view(), name="salis-complete"),
 ]

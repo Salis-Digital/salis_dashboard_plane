@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Signing in with Salis…</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: system-ui, -apple-system, sans-serif;
+        background: #0b0d10;
+        color: #e8eaed;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Completing Salis sign-in…</p>
+    <form id="salis-complete" method="post" action="{{ complete_url }}">
+      {% csrf_token %}
+      <input type="hidden" name="access_token" id="access_token" value="" />
+      <input type="hidden" name="state" id="state" value="" />
+    </form>
+    <script>
+      (function () {
+        var params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+        var accessToken = params.get("access_token");
+        var state = params.get("state") || "";
+        if (!accessToken) {
+          document.body.innerHTML = "<p>Missing access token from Salis IAM.</p>";
+          return;
+        }
+        document.getElementById("access_token").value = accessToken;
+        document.getElementById("state").value = state;
+        // Drop the token from the address bar before submitting.
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
+        document.getElementById("salis-complete").submit();
+      })();
+    </script>
+  </body>
+</html>

@@ -88,8 +88,8 @@ export class InstanceStore implements IInstanceStore {
    * @returns configurations in the form of {key, value} pair.
    */
   get formattedConfig() {
-    if (!this.instanceConfigurations) return undefined;
-    return this.instanceConfigurations?.reduce((formData: IFormattedInstanceConfiguration, config) => {
+    if (!Array.isArray(this.instanceConfigurations)) return undefined;
+    return this.instanceConfigurations.reduce((formData: IFormattedInstanceConfiguration, config) => {
       formData[config.key] = config.value;
       return formData;
     }, {} as IFormattedInstanceConfiguration);
@@ -167,7 +167,10 @@ export class InstanceStore implements IInstanceStore {
   fetchInstanceConfigurations = async () => {
     try {
       const instanceConfigurations = await this.instanceService.configurations();
-      if (instanceConfigurations) runInAction(() => (this.instanceConfigurations = instanceConfigurations));
+      if (!Array.isArray(instanceConfigurations)) {
+        throw new Error("Invalid instance configurations response");
+      }
+      runInAction(() => (this.instanceConfigurations = instanceConfigurations));
       return instanceConfigurations;
     } catch (error) {
       console.error("Error fetching the instance configurations");
@@ -184,8 +187,8 @@ export class InstanceStore implements IInstanceStore {
       const response = await this.instanceService.updateConfigurations(data);
       runInAction(() => {
         this.instanceConfigurations = this.instanceConfigurations?.map((config) => {
-          const item = response.find((item) => item.key === config.key);
-          if (item) return item;
+          const updated = response.find((item) => item.key === config.key);
+          if (updated) return updated;
           return config;
         });
       });

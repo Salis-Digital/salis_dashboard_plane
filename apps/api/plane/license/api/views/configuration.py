@@ -41,10 +41,30 @@ class InstanceConfigurationEndpoint(BaseAPIView):
     @invalidate_cache(path="/api/instances/configurations/", user=False)
     @invalidate_cache(path="/api/instances/", user=False)
     def patch(self, request):
-        configurations = InstanceConfiguration.objects.filter(key__in=request.data.keys())
+        configurations = list(InstanceConfiguration.objects.filter(key__in=request.data.keys()))
+        existing_keys = {configuration.key for configuration in configurations}
+
+        # Create any new keys (e.g. Salis IAM added after initial configure_instance)
+        for key in request.data.keys():
+            if key in existing_keys:
+                continue
+            raw_value = request.data.get(key)
+            value = "" if raw_value is None else str(raw_value).strip()
+            category = "SALIS" if str(key).startswith("SALIS") or key == "IS_SALIS_ENABLED" else "OTHER"
+            configurations.append(
+                InstanceConfiguration.objects.create(
+                    key=key,
+                    value=value,
+                    category=category,
+                    is_encrypted=False,
+                )
+            )
 
         bulk_configurations = []
         for configuration in configurations:
+            if configuration.key not in existing_keys:
+                # Newly created above already has the requested value
+                continue
             raw_value = request.data.get(configuration.key, configuration.value)
             value = "" if raw_value is None else str(raw_value).strip()
             if configuration.is_encrypted:
@@ -53,7 +73,8 @@ class InstanceConfigurationEndpoint(BaseAPIView):
                 configuration.value = value
             bulk_configurations.append(configuration)
 
-        InstanceConfiguration.objects.bulk_update(bulk_configurations, ["value"], batch_size=100)
+        if bulk_configurations:
+            InstanceConfiguration.objects.bulk_update(bulk_configurations, ["value"], batch_size=100)
 
         serializer = InstanceConfigurationSerializer(configurations, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

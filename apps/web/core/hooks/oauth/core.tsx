@@ -18,6 +18,17 @@ import googleLogo from "@/app/assets/logos/google-logo.svg?url";
 // hooks
 import { useInstance } from "@/hooks/store/use-instance";
 
+function SalisMark() {
+  return (
+    <span
+      className="flex h-[18px] w-[18px] items-center justify-center rounded-sm bg-[#C45C26] text-[10px] font-bold text-white"
+      aria-hidden
+    >
+      S
+    </span>
+  );
+}
+
 export const useCoreOAuthConfig = (oauthActionText: string): TOAuthConfigs => {
   //router
   const searchParams = useSearchParams();
@@ -33,9 +44,19 @@ export const useCoreOAuthConfig = (oauthActionText: string): TOAuthConfigs => {
       (config?.is_google_enabled ||
         config?.is_github_enabled ||
         config?.is_gitlab_enabled ||
-        config?.is_gitea_enabled)) ||
+        config?.is_gitea_enabled ||
+        config?.is_salis_enabled)) ||
     false;
   const oAuthOptions: TOAuthOption[] = [
+    {
+      id: "salis",
+      text: `${oauthActionText} with Salis`,
+      icon: <SalisMark />,
+      onClick: () => {
+        window.location.assign(`${API_BASE_URL}/auth/salis/${next_path ? `?next_path=${next_path}` : ``}`);
+      },
+      enabled: config?.is_salis_enabled,
+    },
     {
       id: "google",
       text: `${oauthActionText} with Google`,

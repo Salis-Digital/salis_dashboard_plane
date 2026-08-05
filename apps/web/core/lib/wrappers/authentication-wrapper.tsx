@@ -8,11 +8,14 @@ import type { ReactNode } from "react";
 import { observer } from "mobx-react";
 import { useSearchParams, usePathname } from "next/navigation";
 import useSWR from "swr";
+// plane imports
+import { API_BASE_URL } from "@plane/constants";
 // components
 import { LogoSpinner } from "@/components/common/logo-spinner";
 // helpers
 import { EPageTypes } from "@/helpers/authentication.helper";
 // hooks
+import { useInstance } from "@/hooks/store/use-instance";
 import { useWorkspace } from "@/hooks/store/use-workspace";
 import { useUser, useUserProfile, useUserSettings } from "@/hooks/store/user";
 import { useAppRouter } from "@/hooks/use-app-router";
@@ -29,14 +32,32 @@ const isValidURL = (url: string): boolean => {
   return !disallowedSchemes.test(url);
 };
 
+const LogoSpinnerScreen = () => (
+  <div className="relative flex h-screen w-full items-center justify-center">
+    <LogoSpinner />
+  </div>
+);
+
+/**
+ * Send anonymous users to Salis IAM when enabled.
+ * Skips when an auth error_code is present so the sign-in page can show the banner.
+ */
+const redirectToSalisIam = (nextPath?: string | null): boolean => {
+  const query = nextPath ? `?next_path=${encodeURIComponent(nextPath)}` : "";
+  window.location.assign(`${API_BASE_URL}/auth/salis/${query}`);
+  return true;
+};
+
 export const AuthenticationWrapper = observer(function AuthenticationWrapper(props: TAuthenticationWrapper) {
   const pathname = usePathname();
   const router = useAppRouter();
   const searchParams = useSearchParams();
   const nextPath = searchParams.get("next_path");
+  const errorCode = searchParams.get("error_code");
   // props
   const { children, pageType = EPageTypes.AUTHENTICATED } = props;
   // hooks
+  const { config } = useInstance();
   const { isLoading: isUserLoading, data: currentUser, fetchCurrentUser } = useUser();
   const { data: currentUserProfile } = useUserProfile();
   const { data: currentUserSettings } = useUserSettings();
@@ -46,6 +67,9 @@ export const AuthenticationWrapper = observer(function AuthenticationWrapper(pro
     revalidateOnFocus: false,
     shouldRetryOnError: false,
   });
+
+  const isSalisEnabled = Boolean(config?.is_salis_enabled);
+  const shouldUseSalis = isSalisEnabled && !errorCode;
 
   const isUserOnboard =
     currentUserProfile?.is_onboarded ||
@@ -78,18 +102,19 @@ export const AuthenticationWrapper = observer(function AuthenticationWrapper(pro
     return redirectionRoute;
   };
 
-  if ((isUserSWRLoading || isUserLoading || workspacesLoader) && !currentUser?.id)
-    return (
-      <div className="relative flex h-screen w-full items-center justify-center">
-        <LogoSpinner />
-      </div>
-    );
+  if ((isUserSWRLoading || isUserLoading || workspacesLoader) && !currentUser?.id) return <LogoSpinnerScreen />;
 
   if (pageType === EPageTypes.PUBLIC) return <>{children}</>;
 
   if (pageType === EPageTypes.NON_AUTHENTICATED) {
-    if (!currentUser?.id) return <>{children}</>;
-    else {
+    if (!currentUser?.id) {
+      // Opening web while signed out → IAM → dashboard after success
+      if (shouldUseSalis) {
+        redirectToSalisIam(nextPath);
+        return <LogoSpinnerScreen />;
+      }
+      return <>{children}</>;
+    } else {
       if (currentUserProfile?.id && isUserOnboard) {
         const currentRedirectRoute = getWorkspaceRedirectionUrl();
         router.push(currentRedirectRoute);
@@ -103,6 +128,10 @@ export const AuthenticationWrapper = observer(function AuthenticationWrapper(pro
 
   if (pageType === EPageTypes.ONBOARDING) {
     if (!currentUser?.id) {
+      if (shouldUseSalis) {
+        redirectToSalisIam(pathname);
+        return <LogoSpinnerScreen />;
+      }
       router.push(`/${pathname ? `?next_path=${pathname}` : ``}`);
       return <></>;
     } else {
@@ -116,6 +145,10 @@ export const AuthenticationWrapper = observer(function AuthenticationWrapper(pro
 
   if (pageType === EPageTypes.SET_PASSWORD) {
     if (!currentUser?.id) {
+      if (shouldUseSalis) {
+        redirectToSalisIam(pathname);
+        return <LogoSpinnerScreen />;
+      }
       router.push(`/${pathname ? `?next_path=${pathname}` : ``}`);
       return <></>;
     } else {
@@ -135,6 +168,11 @@ export const AuthenticationWrapper = observer(function AuthenticationWrapper(pro
         return <></>;
       }
     } else {
+      // Deep link / dashboard route while signed out → IAM, then back here
+      if (shouldUseSalis) {
+        redirectToSalisIam(pathname);
+        return <LogoSpinnerScreen />;
+      }
       router.push(`/${pathname ? `?next_path=${pathname}` : ``}`);
       return <></>;
     }
