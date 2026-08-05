@@ -117,3 +117,10 @@ packages/i18n/src/types/keys.generated.ts
 
 # Local security notes (not for version control)
 /security/
+
+# Helm values for local/test deployments (contain registry tokens and app secret keys)
+plane-values.yaml
+apps/values-*.yaml
+
+# Local agent debug logs
+.cursor/debug-*.log
