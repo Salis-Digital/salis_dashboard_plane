@@ -535,6 +535,7 @@ ATTACHMENT_MIME_TYPES = [
     "application/json",
     "text/xml",
     "text/csv",
+    "application/csv",
     "application/xml",
     # SQL
     "application/x-sql",
@@ -542,6 +543,7 @@ ATTACHMENT_MIME_TYPES = [
     "application/x-gzip",
     # Markdown
     "text/markdown",
+    "text/x-markdown",
 ]
 
 # MIME types that browsers can execute as scripts when served inline.
