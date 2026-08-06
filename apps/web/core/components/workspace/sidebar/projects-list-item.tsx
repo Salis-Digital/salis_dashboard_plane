@@ -433,17 +433,15 @@ export const SidebarProjectsListItem = observer(function SidebarProjectsListItem
                     </div>
                   </CustomMenu.MenuItem>
                   {/* leave project */}
-                  {!isAuthorized && (
-                    <CustomMenu.MenuItem
-                      onClick={handleLeaveProject}
-                      data-ph-element={MEMBER_TRACKER_ELEMENTS.SIDEBAR_PROJECT_QUICK_ACTIONS}
-                    >
-                      <div className="flex items-center justify-start gap-2">
-                        <LogOut className="h-3.5 w-3.5 stroke-[1.5]" />
-                        <span>{t("leave_project")}</span>
-                      </div>
-                    </CustomMenu.MenuItem>
-                  )}
+                  <CustomMenu.MenuItem
+                    onClick={handleLeaveProject}
+                    data-ph-element={MEMBER_TRACKER_ELEMENTS.SIDEBAR_PROJECT_QUICK_ACTIONS}
+                  >
+                    <div className="flex items-center justify-start gap-2">
+                      <LogOut className="h-3.5 w-3.5 stroke-[1.5]" />
+                      <span>{t("leave_project")}</span>
+                    </div>
+                  </CustomMenu.MenuItem>
                 </CustomMenu>
                 {isAccordionMode && (
                   <IconButton

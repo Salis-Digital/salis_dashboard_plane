@@ -39,20 +39,21 @@ export function ProjectActionsMenu({
   // translation
   const { t } = useTranslation();
   // refs
-  const actionSectionRef = useRef<HTMLDivElement | null>(null);
+  const actionSectionRef = useRef<HTMLButtonElement | null>(null);
   // router
   const navigate = useNavigate();
 
   return (
     <CustomMenu
       customButton={
-        <span
+        <button
+          type="button"
           ref={actionSectionRef}
           className="grid place-items-center rounded-sm p-0.5 text-placeholder hover:bg-layer-1"
           onClick={() => setIsMenuActive(!isMenuActive)}
         >
           <MoreHorizontal className="size-4" />
-        </span>
+        </button>
       }
       className="flex-shrink-0"
       customButtonClassName="grid place-items-center"
@@ -102,17 +103,15 @@ export function ProjectActionsMenu({
         </div>
       </CustomMenu.MenuItem>
       {/* Leave project */}
-      {!isAuthorized && (
-        <CustomMenu.MenuItem
-          onClick={onLeaveProject}
-          data-ph-element={MEMBER_TRACKER_ELEMENTS.SIDEBAR_PROJECT_QUICK_ACTIONS}
-        >
-          <div className="flex items-center justify-start gap-2">
-            <LogOut className="h-3.5 w-3.5 stroke-[1.5]" />
-            <span>{t("leave_project")}</span>
-          </div>
-        </CustomMenu.MenuItem>
-      )}
+      <CustomMenu.MenuItem
+        onClick={onLeaveProject}
+        data-ph-element={MEMBER_TRACKER_ELEMENTS.SIDEBAR_PROJECT_QUICK_ACTIONS}
+      >
+        <div className="flex items-center justify-start gap-2">
+          <LogOut className="h-3.5 w-3.5 stroke-[1.5]" />
+          <span>{t("leave_project")}</span>
+        </div>
+      </CustomMenu.MenuItem>
     </CustomMenu>
   );
 }

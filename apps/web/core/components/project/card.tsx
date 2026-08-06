@@ -8,13 +8,14 @@ import React, { useRef, useState } from "react";
 import { observer } from "mobx-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArchiveRestoreIcon, Settings, UserPlus } from "lucide-react";
+import { ArchiveRestoreIcon, LogOut, Settings, UserPlus } from "lucide-react";
 // plane imports
 import { EUserPermissions, EUserPermissionsLevel, IS_FAVORITE_MENU_OPEN } from "@plane/constants";
 import { useLocalStorage } from "@plane/hooks";
+import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { Logo } from "@plane/propel/emoji-icon-picker";
-import { LinkIcon, LockIcon, NewTabIcon, TrashIcon, CheckIcon } from "@plane/propel/icons";
+import { LinkIcon, LockIcon, NewTabIcon, TrashIcon } from "@plane/propel/icons";
 import { setPromiseToast, setToast, TOAST_TYPE } from "@plane/propel/toast";
 import { Tooltip } from "@plane/propel/tooltip";
 import type { IProject } from "@plane/types";
@@ -32,6 +33,7 @@ import { usePlatformOS } from "@/hooks/use-platform-os";
 import { CoverImage } from "@/components/common/cover-image";
 import { DeleteProjectModal } from "./delete-project-modal";
 import { JoinProjectModal } from "./join-project-modal";
+import { LeaveProjectModal } from "./leave-project-modal";
 import { ArchiveRestoreProjectModal } from "./archive-restore-modal";
 
 type Props = {
@@ -43,6 +45,7 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
   // states
   const [deleteProjectModalOpen, setDeleteProjectModal] = useState(false);
   const [joinProjectModalOpen, setJoinProjectModal] = useState(false);
+  const [leaveProjectModalOpen, setLeaveProjectModal] = useState(false);
   const [restoreProject, setRestoreProject] = useState(false);
   // refs
   const projectCardRef = useRef(null);
@@ -50,6 +53,7 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
   const router = useAppRouter();
   const { workspaceSlug } = useParams();
   // store hooks
+  const { t } = useTranslation();
   const { getUserDetails } = useMember();
   const { addProjectToFavorites, removeProjectFromFavorites } = useProject();
   const { allowPermissions } = useUserPermissions();
@@ -138,6 +142,13 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
       shouldRender: !isMemberOfProject && !isArchived,
     },
     {
+      key: "leave",
+      action: () => setLeaveProjectModal(true),
+      title: t("leave_project"),
+      icon: LogOut,
+      shouldRender: isMemberOfProject && !isArchived,
+    },
+    {
       key: "open-new-tab",
       action: handleOpenInNewTab,
       title: "Open in new tab",
@@ -184,6 +195,8 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
           handleClose={() => setJoinProjectModal(false)}
         />
       )}
+      {/* Leave Project Modal */}
+      <LeaveProjectModal project={project} isOpen={leaveProjectModalOpen} onClose={() => setLeaveProjectModal(false)} />
       {/* Restore project modal */}
       {workspaceSlug && project && (
         <ArchiveRestoreProjectModal
@@ -307,7 +320,8 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
             {isArchived ? (
               hasAdminRole && (
                 <div className="flex items-center justify-center gap-2">
-                  <div
+                  <button
+                    type="button"
                     className="flex items-center justify-center text-11 font-medium text-placeholder hover:text-secondary"
                     onClick={(e) => {
                       e.preventDefault();
@@ -319,8 +333,9 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
                       <ArchiveRestoreIcon className="h-3.5 w-3.5" />
                       Restore
                     </div>
-                  </div>
-                  <div
+                  </button>
+                  <button
+                    type="button"
                     className="flex items-center justify-center text-11 font-medium text-placeholder hover:text-secondary"
                     onClick={(e) => {
                       e.preventDefault();
@@ -329,33 +344,42 @@ export const ProjectCard = observer(function ProjectCard(props: Props) {
                     }}
                   >
                     <TrashIcon className="h-3.5 w-3.5" />
-                  </div>
+                  </button>
                 </div>
               )
             ) : (
               <>
-                {isMemberOfProject &&
-                  (hasAdminRole || hasMemberRole ? (
-                    <Link
-                      className="flex items-center justify-center rounded-sm p-1 text-placeholder hover:bg-layer-1 hover:text-secondary"
+                {isMemberOfProject && (
+                  <div className="flex items-center gap-4">
+                    {(hasAdminRole || hasMemberRole) && (
+                      <Link
+                        className="flex items-center justify-center rounded-sm p-1 text-placeholder hover:bg-layer-1 hover:text-secondary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                        href={`/${workspaceSlug}/settings/projects/${project.id}`}
+                      >
+                        <Settings className="h-3.5 w-3.5" />
+                      </Link>
+                    )}
+                    <Button
+                      variant="link"
+                      className="!p-0 font-semibold no-underline hover:no-underline"
                       onClick={(e) => {
+                        e.preventDefault();
                         e.stopPropagation();
+                        setLeaveProjectModal(true);
                       }}
-                      href={`/${workspaceSlug}/settings/projects/${project.id}`}
                     >
-                      <Settings className="h-3.5 w-3.5" />
-                    </Link>
-                  ) : (
-                    <span className="flex items-center gap-1 text-13 text-placeholder">
-                      <CheckIcon className="h-3.5 w-3.5" />
-                      Joined
-                    </span>
-                  ))}
+                      {t("leave")}
+                    </Button>
+                  </div>
+                )}
                 {!isMemberOfProject && (
                   <div className="flex items-center">
                     <Button
                       variant="link"
-                      className="!p-0 font-semibold"
+                      className="!p-0 font-semibold no-underline hover:no-underline"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();

@@ -322,24 +322,23 @@ class ProjectMemberViewSet(BaseViewSet):
 
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER, ROLE.GUEST])
     def leave(self, request, slug, project_id):
-        project_member = ProjectMember.objects.get(
-            workspace__slug=slug,
-            project_id=project_id,
-            member=request.user,
-            is_active=True,
-        )
+        try:
+            project_member = ProjectMember.objects.get(
+                workspace__slug=slug,
+                project_id=project_id,
+                member=request.user,
+                is_active=True,
+            )
+        except ProjectMember.DoesNotExist:
+            return Response({"error": "You are not a member of this project"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Check if the leaving user is the only admin of the project
-        if (
-            project_member.role == 20
-            and not ProjectMember.objects.filter(
-                workspace__slug=slug, project_id=project_id, role=20, is_active=True
-            ).count()
-            > 1
-        ):
+        if project_member.role == ROLE.ADMIN.value and not ProjectMember.objects.filter(
+            workspace__slug=slug, project_id=project_id, role=ROLE.ADMIN.value, is_active=True
+        ).exclude(pk=project_member.pk).exists():
             return Response(
                 {
-                    "error": "You cannot leave the project as your the only admin of the project you will have to either delete the project or create an another admin"  # noqa: E501
+                    "error": "You cannot leave the project as you are the only admin of the project. Delete the project or promote another member to admin."  # noqa: E501
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )

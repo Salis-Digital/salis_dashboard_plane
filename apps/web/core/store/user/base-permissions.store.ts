@@ -326,6 +326,9 @@ export class BaseUserPermissionStore implements IBaseUserPermissionStore {
       if (response) {
         runInAction(() => {
           set(this.workspaceProjectsPermissions, [workspaceSlug, projectId], projectMemberRole);
+          if (this.store.projectRoot.project.projectMap[projectId]) {
+            set(this.store.projectRoot.project.projectMap, [projectId, "member_role"], projectMemberRole);
+          }
         });
         void this.fetchWorkspaceLevelProjectEntities(workspaceSlug, projectId);
       }
@@ -347,7 +350,11 @@ export class BaseUserPermissionStore implements IBaseUserPermissionStore {
       runInAction(() => {
         unset(this.workspaceProjectsPermissions, [workspaceSlug, projectId]);
         unset(this.projectUserInfo, [workspaceSlug, projectId]);
-        unset(this.store.projectRoot.project.projectMap, [projectId]);
+        // Keep project in the map so All projects still shows it with Join
+        if (this.store.projectRoot.project.projectMap[projectId]) {
+          set(this.store.projectRoot.project.projectMap, [projectId, "member_role"], null);
+          set(this.store.projectRoot.project.projectMap, [projectId, "is_favorite"], false);
+        }
       });
     } catch (error) {
       console.error("Error user leaving the project", error);
