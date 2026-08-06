@@ -51,35 +51,38 @@ export function Tooltip(props: ITooltipProps) {
 
   return (
     <BaseTooltip.Provider>
-      <BaseTooltip.Root delay={openDelay} closeDelay={closeDelay} disabled={disabled}>
-        <BaseTooltip.Trigger render={children} />
+      <BaseTooltip.Root delay={openDelay} closeDelay={closeDelay} disabled={disabled || isMobile}>
+        {/* Wrap children so hover/focus handlers attach even when the child is a non-DOM component */}
+        <BaseTooltip.Trigger
+          render={(triggerProps) => (
+            <span {...triggerProps} className={cn("inline-flex max-w-full", triggerProps.className)}>
+              {children}
+            </span>
+          )}
+        />
         <BaseTooltip.Portal>
-          <BaseTooltip.Positioner
-            className={cn(
-              "z-50 max-w-xs gap-1 overflow-hidden rounded-lg border border-subtle-1 bg-layer-2 px-2 py-1.5 break-words shadow-overlay-200",
-              {
-                hidden: isMobile,
-              },
-              className
-            )}
-            side={finalSide}
-            sideOffset={sideOffset}
-            align={finalAlign}
-            render={
-              <BaseTooltip.Popup>
-                {tooltipHeading && <p className="text-caption-md-medium text-primary">{tooltipHeading}</p>}
-                {tooltipContent && (
-                  <p
-                    className={cn("text-caption-sm-regular text-secondary", {
-                      "mt-1": tooltipHeading && tooltipHeading !== "",
-                    })}
-                  >
-                    {tooltipContent}
-                  </p>
-                )}
-              </BaseTooltip.Popup>
-            }
-          />
+          <BaseTooltip.Positioner side={finalSide} sideOffset={sideOffset} align={finalAlign} className="z-[100]">
+            <BaseTooltip.Popup
+              className={cn(
+                "z-[100] max-w-xs gap-1 overflow-hidden rounded-lg border border-subtle-1 bg-layer-2 px-2 py-1.5 break-words shadow-overlay-200",
+                {
+                  hidden: isMobile,
+                },
+                className
+              )}
+            >
+              {tooltipHeading && <p className="text-caption-md-medium text-primary">{tooltipHeading}</p>}
+              {tooltipContent && (
+                <p
+                  className={cn("text-caption-sm-regular text-secondary", {
+                    "mt-1": tooltipHeading && tooltipHeading !== "",
+                  })}
+                >
+                  {tooltipContent}
+                </p>
+              )}
+            </BaseTooltip.Popup>
+          </BaseTooltip.Positioner>
         </BaseTooltip.Portal>
       </BaseTooltip.Root>
     </BaseTooltip.Provider>
