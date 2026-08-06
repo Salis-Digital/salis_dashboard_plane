@@ -77,7 +77,7 @@ export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: Work
   return (
     <Menu
       as="div"
-      className={cn("relative flex h-full w-fit max-w-48 truncate whitespace-nowrap", {
+      className={cn("relative flex h-full w-fit max-w-full min-w-0 truncate whitespace-nowrap sm:max-w-48", {
         "w-full justify-center text-center": variant === "sidebar",
         "flex-grow justify-stretch truncate text-left": variant === "top-navigation",
       })}
@@ -126,7 +126,9 @@ export const WorkspaceMenuRoot = observer(function WorkspaceMenuRoot(props: Work
                     name={activeWorkspace?.name}
                     classNames="border border-subtle rounded-md size-7"
                   />
-                  <h4 className="truncate text-14 font-medium text-primary">{activeWorkspace?.name ?? t("loading")}</h4>
+                  <h4 className="truncate text-14 font-medium text-primary max-[380px]:hidden">
+                    {activeWorkspace?.name ?? t("loading")}
+                  </h4>
                 </div>
                 <ChevronDownIcon
                   className={cn("size-4 flex-shrink-0 text-placeholder duration-300", {

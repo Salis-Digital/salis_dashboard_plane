@@ -15,11 +15,10 @@ import { WorkspaceMenuRoot } from "@/components/workspace/sidebar/workspace-menu
 import { useAppRailPreferences } from "@/hooks/use-navigation-preferences";
 import { Tooltip } from "@plane/propel/tooltip";
 import { AppSidebarItem } from "@/components/sidebar/sidebar-item";
-import { InboxIcon } from "@plane/propel/icons";
 import useSWR from "swr";
 import { useWorkspaceNotifications } from "@/hooks/store/notifications";
 // local imports
-import { StarUsOnGitHubLink } from "@/app/(all)/[workspaceSlug]/(projects)/star-us-link";
+import { InboxIcon } from "@plane/propel/icons";
 
 export const TopNavigationRoot = observer(function TopNavigationRoot() {
   // router
@@ -46,20 +45,23 @@ export const TopNavigationRoot = observer(function TopNavigationRoot() {
 
   return (
     <div
-      className={cn("z-[27] flex min-h-10 w-full items-center bg-canvas px-3.5 transition-all duration-300", {
-        "px-2": !showLabel,
-      })}
+      className={cn(
+        "z-[27] flex min-h-10 w-full items-center gap-2 bg-canvas px-2 transition-all duration-300 sm:gap-3 sm:px-3.5",
+        {
+          "sm:px-2": !showLabel,
+        }
+      )}
     >
-      {/* Workspace Menu */}
-      <div className="flex-1 shrink-0">
+      {/* Workspace Menu — truncates on narrow screens */}
+      <div className="min-w-0 flex-auto basis-0 sm:max-w-[40%] md:max-w-none">
         <WorkspaceMenuRoot variant="top-navigation" />
       </div>
-      {/* Power K Search */}
-      <div className="shrink-0">
+      {/* Power K Search — flexes between workspace and actions; never forces a fixed desktop width on mobile */}
+      <div className="flex w-full flex-auto justify-center">
         <TopNavPowerK />
       </div>
       {/* Additional Actions */}
-      <div className="flex flex-1 shrink-0 items-center justify-end gap-1">
+      <div className="flex shrink-0 items-center justify-end gap-0.5 sm:gap-2 md:gap-3">
         <Tooltip tooltipContent="Inbox" position="bottom">
           <AppSidebarItem
             variant="link"
@@ -77,8 +79,9 @@ export const TopNavigationRoot = observer(function TopNavigationRoot() {
             }}
           />
         </Tooltip>
-        <HelpMenuRoot />
-        <StarUsOnGitHubLink />
+        <Tooltip tooltipContent="Keyboard Shortcuts" position="bottom">
+          <HelpMenuRoot />
+        </Tooltip>
         <div className="flex size-8 items-center justify-center rounded-md hover:bg-layer-1-hover">
           <UserMenuRoot />
         </div>
