@@ -15,6 +15,7 @@ import type {
 import giteaLogo from "@/app/assets/logos/gitea-logo.svg?url";
 import githubLightModeImage from "@/app/assets/logos/github-black.png?url";
 import githubDarkModeImage from "@/app/assets/logos/github-white.png?url";
+import salisLogo from "@/app/assets/logos/salis-logo.svg?url";
 import gitlabLogo from "@/app/assets/logos/gitlab-logo.svg?url";
 import googleLogo from "@/app/assets/logos/google-logo.svg?url";
 // components
@@ -53,13 +54,9 @@ export const getCoreAuthenticationModesMap: (
   },
   salis: {
     key: "salis",
-    name: "Salis IAM",
+    name: "IAM Salis",
     description: "Require members to log in or sign up through iam.salis.app. Token claims supply email and name.",
-    icon: (
-      <span className="flex h-5 w-5 items-center justify-center rounded-sm bg-[#C45C26] text-[10px] font-bold text-white">
-        S
-      </span>
-    ),
+    icon: <img src={salisLogo} height={20} width={20} alt="Salis Logo" />,
     config: <SalisConfiguration disabled={disabled} updateConfig={updateConfig} />,
     enabledConfigKey: "IS_SALIS_ENABLED",
   },
