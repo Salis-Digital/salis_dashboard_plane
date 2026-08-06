@@ -10,6 +10,7 @@ from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.db import IntegrityError
+from django.db.models import Q
 
 # Third party imports
 from rest_framework import status
@@ -708,8 +709,18 @@ class ProjectBulkAssetEndpoint(BaseAPIView):
         if not asset_ids:
             return Response({"error": "No asset ids provided."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # get the asset id — scope to the project to prevent cross-project IDOR
-        assets = FileAsset.objects.filter(id__in=asset_ids, workspace__slug=slug, project_id=project_id)
+        # get the asset id — scope to the project, or allow unassigned project covers
+        # uploaded at workspace scope before the project existed (project_id is null).
+        assets = FileAsset.objects.filter(
+            id__in=asset_ids,
+            workspace__slug=slug,
+        ).filter(
+            Q(project_id=project_id)
+            | Q(
+                project_id__isnull=True,
+                entity_type=FileAsset.EntityTypeContext.PROJECT_COVER,
+            )
+        )
 
         # Get the first asset
         asset = assets.first()
