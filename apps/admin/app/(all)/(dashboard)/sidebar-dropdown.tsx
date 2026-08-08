@@ -39,7 +39,7 @@ export const AdminSidebarDropdown = observer(function AdminSidebarDropdown() {
   const getSidebarMenuItems = () => (
     <Menu.Items
       className={cn(
-        "shadow-lg absolute left-0 z-20 mt-1.5 flex w-52 flex-col divide-y divide-subtle rounded-md border border-subtle bg-surface-1 px-1 py-2 text-11 outline-none",
+        "shadow-lg absolute left-0 z-20 mt-1.5 flex w-[min(13rem,calc(100vw-2rem))] flex-col divide-y divide-subtle rounded-md border border-subtle bg-surface-1 px-1 py-2 text-11 outline-none",
         {
           "left-4": isSidebarCollapsed,
         }
@@ -114,7 +114,7 @@ export const AdminSidebarDropdown = observer(function AdminSidebarDropdown() {
           </Menu>
 
           {!isSidebarCollapsed && (
-            <div className="flex w-full gap-2">
+            <div className="flex w-full min-w-0 gap-2">
               <h4 className="grow truncate text-body-md-medium text-primary">Instance admin</h4>
             </div>
           )}
