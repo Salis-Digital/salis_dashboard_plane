@@ -52,12 +52,12 @@ export const TopNavigationRoot = observer(function TopNavigationRoot() {
         }
       )}
     >
-      {/* Workspace Menu — truncates on narrow screens */}
-      <div className="min-w-0 flex-auto basis-0 sm:max-w-[40%] md:max-w-none">
+      {/* Workspace Menu — shrink-0 so logo+chevron never collapse to 0 on mobile */}
+      <div className="max-w-[42%] min-w-0 shrink-0 sm:max-w-[40%] md:max-w-none md:flex-auto md:basis-0">
         <WorkspaceMenuRoot variant="top-navigation" />
       </div>
-      {/* Power K Search — flexes between workspace and actions; never forces a fixed desktop width on mobile */}
-      <div className="flex w-full flex-auto justify-center">
+      {/* Power K Search — takes remaining space without forcing w-full over workspace */}
+      <div className="flex min-w-0 flex-1 justify-center">
         <TopNavPowerK />
       </div>
       {/* Additional Actions */}
@@ -79,9 +79,12 @@ export const TopNavigationRoot = observer(function TopNavigationRoot() {
             }}
           />
         </Tooltip>
-        <Tooltip tooltipContent="Keyboard Shortcuts" position="bottom">
-          <HelpMenuRoot />
-        </Tooltip>
+        {/* Keyboard shortcuts are desktop-oriented; hide on mobile to free tap space */}
+        <div className="hidden sm:block">
+          <Tooltip tooltipContent="Keyboard Shortcuts" position="bottom">
+            <HelpMenuRoot />
+          </Tooltip>
+        </div>
         <div className="flex size-8 items-center justify-center rounded-md hover:bg-layer-1-hover">
           <UserMenuRoot />
         </div>

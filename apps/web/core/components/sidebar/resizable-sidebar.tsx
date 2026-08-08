@@ -194,14 +194,23 @@ export function ResizableSidebar({
           !isResizing && "transition-all duration-300 ease-in-out",
           isCollapsed ? "w-0 translate-x-[-100%] opacity-0" : "translate-x-0 opacity-100",
           // Viewport-based overlay: UA-based isMobile misses desktop browsers at narrow widths
-          isOverlayViewport && "absolute inset-y-0 left-0 z-30 shadow-raised-200",
+          // Full-bleed on mobile so the drawer fills the content pane
+          isOverlayViewport && "absolute inset-y-0 left-0 z-30 w-full max-w-full shadow-raised-200",
           className
         )}
-        style={{
-          width: `${isCollapsed ? 0 : width}px`,
-          minWidth: `${isCollapsed ? 0 : width}px`,
-          maxWidth: `${isCollapsed ? 0 : width}px`,
-        }}
+        style={
+          isOverlayViewport
+            ? {
+                width: isCollapsed ? 0 : "100%",
+                minWidth: isCollapsed ? 0 : "100%",
+                maxWidth: isCollapsed ? 0 : "100%",
+              }
+            : {
+                width: `${isCollapsed ? 0 : width}px`,
+                minWidth: `${isCollapsed ? 0 : width}px`,
+                maxWidth: `${isCollapsed ? 0 : width}px`,
+              }
+        }
         role="complementary"
         aria-label="Main sidebar"
         data-prevent-outside-click={isOverlayViewport}

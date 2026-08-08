@@ -11,11 +11,11 @@ import { ISSUE_LAYOUT_MAP } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { CheckIcon } from "@plane/propel/icons";
 import { EIssueLayoutTypes } from "@plane/types";
+import { getButtonStyling } from "@plane/propel/button";
 import { Dropdown } from "@plane/ui";
 import { cn } from "@plane/utils";
 // components
 import { IssueLayoutIcon } from "@/components/issues/issue-layouts/layout-icon";
-import { getIconButtonStyling } from "@plane/propel/icon-button";
 
 type TLayoutDropDown = {
   onChange: (value: EIssueLayoutTypes) => void;
@@ -42,29 +42,35 @@ export const LayoutDropDown = observer(function LayoutDropDown(props: TLayoutDro
     [availableLayouts]
   );
 
-  const buttonContent = useCallback((isOpen: boolean, buttonValue: string | string[] | undefined) => {
-    const dropdownValue = ISSUE_LAYOUT_MAP[buttonValue as EIssueLayoutTypes];
-    return (
-      <div className="flex items-center gap-2 text-secondary">
-        <IssueLayoutIcon layout={dropdownValue.key} strokeWidth={2} className={`size-3.5 text-secondary`} />
-        <span className="text-11 font-medium">{t(dropdownValue.i18n_label)}</span>
-      </div>
-    );
-  }, []);
-
-  const itemContent = useCallback((props: { value: string; selected: boolean }) => {
-    const dropdownValue = ISSUE_LAYOUT_MAP[props.value as EIssueLayoutTypes];
-
-    return (
-      <div className={cn("flex w-full items-center justify-between gap-2 text-secondary")}>
-        <div className="flex items-center gap-2">
-          <IssueLayoutIcon layout={dropdownValue.key} strokeWidth={2} className={`size-3 text-secondary`} />
+  const buttonContent = useCallback(
+    (isOpen: boolean, buttonValue: string | string[] | undefined) => {
+      const dropdownValue = ISSUE_LAYOUT_MAP[buttonValue as EIssueLayoutTypes];
+      return (
+        <div className="flex items-center gap-2 text-secondary">
+          <IssueLayoutIcon layout={dropdownValue.key} strokeWidth={2} className={`size-3.5 text-secondary`} />
           <span className="text-11 font-medium">{t(dropdownValue.i18n_label)}</span>
         </div>
-        {props.selected && <CheckIcon className="h-3.5 w-3.5 flex-shrink-0" />}
-      </div>
-    );
-  }, []);
+      );
+    },
+    [t]
+  );
+
+  const itemContent = useCallback(
+    (itemProps: { value: string; selected: boolean }) => {
+      const dropdownValue = ISSUE_LAYOUT_MAP[itemProps.value as EIssueLayoutTypes];
+
+      return (
+        <div className={cn("flex w-full items-center justify-between gap-2 text-secondary")}>
+          <div className="flex items-center gap-2">
+            <IssueLayoutIcon layout={dropdownValue.key} strokeWidth={2} className={`size-3 text-secondary`} />
+            <span className="text-11 font-medium">{t(dropdownValue.i18n_label)}</span>
+          </div>
+          {itemProps.selected && <CheckIcon className="h-3.5 w-3.5 flex-shrink-0" />}
+        </div>
+      );
+    },
+    [t]
+  );
 
   const keyExtractor = useCallback((option: any) => option.value, []);
 
@@ -74,7 +80,7 @@ export const LayoutDropDown = observer(function LayoutDropDown(props: TLayoutDro
       value={value?.toString()}
       keyExtractor={keyExtractor}
       options={options}
-      buttonContainerClassName={cn(getIconButtonStyling("secondary", "lg"), "w-auto px-2")}
+      buttonContainerClassName={cn(getButtonStyling("secondary", "lg"))}
       buttonContent={buttonContent}
       renderItem={itemContent}
       disableSearch

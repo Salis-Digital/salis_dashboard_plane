@@ -11,8 +11,8 @@ import packageJson from "package.json";
 export function PlaneVersionNumber() {
   const { t } = useTranslation();
   return (
-    <span>
+    <div className="flex w-full gap-1 py-2 text-12 text-secondary">
       {t("version")}: v{packageJson.version}
-    </span>
+    </div>
   );
 }
