@@ -6,9 +6,9 @@
   "license": "AGPL-3.0",
   "repository": "https://github.com/makeplane/plane.git",
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev --concurrency=18",
-    "start": "turbo run start",
+    "dev": "turbo run dev --concurrency=18 --filter=!space",
+    "start": "turbo run start --filter=!space",
+    "build": "turbo run build --filter=!space",
     "clean": "turbo run clean && rm -rf .turbo && rm -rf .next && rm -rf node_modules && rm -rf dist",
     "fix": "turbo run fix",
     "fix:format": "turbo run fix:format",

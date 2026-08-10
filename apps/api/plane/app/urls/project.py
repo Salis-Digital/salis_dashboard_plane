@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # See the LICENSE file for details.
 
+from django.conf import settings
 from django.urls import path
 
 from plane.app.views import (
@@ -109,15 +110,22 @@ urlpatterns = [
         ProjectFavoritesViewSet.as_view({"delete": "destroy"}),
         name="project-favorite",
     ),
-    path(
-        "workspaces/<str:slug>/projects/<uuid:project_id>/project-deploy-boards/",
-        DeployBoardViewSet.as_view({"get": "list", "post": "create"}),
-        name="project-deploy-board",
-    ),
-    path(
-        "workspaces/<str:slug>/projects/<uuid:project_id>/project-deploy-boards/<uuid:pk>/",
-        DeployBoardViewSet.as_view({"get": "retrieve", "patch": "partial_update", "delete": "destroy"}),
-        name="project-deploy-board",
+    # Deploy / publish boards — gated by ENABLE_SPACE (files retained)
+    *(
+        [
+            path(
+                "workspaces/<str:slug>/projects/<uuid:project_id>/project-deploy-boards/",
+                DeployBoardViewSet.as_view({"get": "list", "post": "create"}),
+                name="project-deploy-board",
+            ),
+            path(
+                "workspaces/<str:slug>/projects/<uuid:project_id>/project-deploy-boards/<uuid:pk>/",
+                DeployBoardViewSet.as_view({"get": "retrieve", "patch": "partial_update", "delete": "destroy"}),
+                name="project-deploy-board",
+            ),
+        ]
+        if settings.ENABLE_SPACE
+        else []
     ),
     path(
         "workspaces/<str:slug>/projects/<uuid:project_id>/archive/",
