@@ -398,6 +398,12 @@ if ADMIN_BASE_URL and not is_valid_url(ADMIN_BASE_URL):
     ADMIN_BASE_URL = None
 ADMIN_BASE_PATH = os.environ.get("ADMIN_BASE_PATH", "/god-mode/")
 
+# Space / publish feature gate (Salis fork). When false:
+# - /api/public/* is not mounted
+# - project-deploy-boards publish APIs are not mounted
+# - auth/spaces/* routes are not mounted
+ENABLE_SPACE = os.environ.get("ENABLE_SPACE", "0") == "1"
+
 # Space Base URL
 SPACE_BASE_URL = os.environ.get("SPACE_BASE_URL", None)
 if SPACE_BASE_URL and not is_valid_url(SPACE_BASE_URL):

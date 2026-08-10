@@ -74,8 +74,9 @@ services:
 
   space:
     image: makeplane/plane-space:${APP_RELEASE:-stable}
+    # Disabled for Salis fork — set SPACE_REPLICAS>=1 and re-enable /spaces proxy to restore
     deploy:
-      replicas: ${SPACE_REPLICAS:-1}
+      replicas: ${SPACE_REPLICAS:-0}
       restart_policy:
         condition: any
     depends_on:

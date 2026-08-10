@@ -24,6 +24,7 @@ services:
 
   space:
     container_name: space
+    profiles: ["space"]
     build:
       context: .
       dockerfile: ./apps/space/Dockerfile.space

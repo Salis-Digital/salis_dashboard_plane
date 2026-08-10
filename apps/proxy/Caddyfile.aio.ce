@@ -3,9 +3,11 @@
 		max_size {$FILE_SIZE_LIMIT}
 	}
 
-    handle /spaces/* {
-        reverse_proxy localhost:3002
-    }
+    # /spaces proxy disabled for Salis fork (space service not started).
+    # To re-enable: uncomment the handle block below and start the space service.
+    # handle /spaces/* {
+    #     reverse_proxy localhost:3002
+    # }
 	
     handle /live/* {
         reverse_proxy localhost:3005

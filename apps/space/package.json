@@ -5,16 +5,19 @@
   "license": "AGPL-3.0",
   "type": "module",
   "scripts": {
-    "dev": "react-router dev --port 3002",
-    "build": "react-router build",
-    "preview": "react-router build && PORT=3002 react-router-serve ./build/server/index.js",
-    "start": "PORT=3002 react-router-serve ./build/server/index.js",
+    "dev": "node -e \"console.log('[space] disabled (IS_SPACE_APP_ENABLED=false). Re-enable in packages/constants/src/features.ts and remove --filter=!space from root package.json.'); process.exit(0)\"",
+    "build": "node -e \"console.log('[space] build skipped — space app disabled.'); process.exit(0)\"",
+    "preview": "node -e \"console.log('[space] preview skipped — space app disabled.'); process.exit(0)\"",
+    "start": "node -e \"console.log('[space] start skipped — space app disabled.'); process.exit(0)\"",
     "clean": "rm -rf .turbo && rm -rf .next && rm -rf .react-router && rm -rf node_modules && rm -rf dist && rm -rf build",
     "check:lint": "oxlint --max-warnings=676 .",
     "check:types": "react-router typegen && tsc --noEmit",
     "check:format": "oxfmt --check .",
     "fix:lint": "oxlint --fix .",
-    "fix:format": "oxfmt ."
+    "fix:format": "oxfmt .",
+    "dev:enabled": "react-router dev --port 3002",
+    "build:enabled": "react-router build",
+    "start:enabled": "PORT=3002 react-router-serve ./build/server/index.js"
   },
   "dependencies": {
     "@bprogress/core": "catalog:",
