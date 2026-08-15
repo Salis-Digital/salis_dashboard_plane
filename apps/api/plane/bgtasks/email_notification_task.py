@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 
 # Third party imports
 from celery import shared_task
-from django.core.mail import EmailMultiAlternatives, get_connection
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 # Django imports
@@ -20,8 +20,9 @@ from django.utils import timezone
 from plane.db.models import EmailNotificationLog, Issue, User
 from plane.license.utils.instance_value import get_email_configuration
 from plane.settings.redis import redis_instance
-from plane.utils.email import generate_plain_text_from_html
+from plane.utils.email import email_branding_context, generate_plain_text_from_html
 from plane.utils.exception_logger import log_exception
+from plane.utils.smtp import send_smtp_message
 
 
 def remove_unwanted_characters(input_text):
@@ -170,15 +171,7 @@ def send_email_notification(issue_id, notification_data, receiver_id, email_noti
             data = create_payload(notification_data=notification_data)
 
             # Get email configurations
-            (
-                EMAIL_HOST,
-                EMAIL_HOST_USER,
-                EMAIL_HOST_PASSWORD,
-                EMAIL_PORT,
-                EMAIL_USE_TLS,
-                EMAIL_USE_SSL,
-                EMAIL_FROM,
-            ) = get_email_configuration()
+            EMAIL_FROM = get_email_configuration()[-1]
 
             receiver = User.objects.get(pk=receiver_id)
             issue = Issue.objects.get(pk=issue_id)
@@ -258,29 +251,20 @@ def send_email_notification(issue_id, notification_data, receiver_id, email_noti
                 "user_preference": f"{base_api}/{str(issue.project.workspace.slug)}/settings/account/notifications/",
                 "comments": comments,
                 "entity_type": "issue",
+                **email_branding_context(base_api),
             }
             html_content = render_to_string("emails/notifications/issue-updates.html", context)
             text_content = generate_plain_text_from_html(html_content)
 
             try:
-                connection = get_connection(
-                    host=EMAIL_HOST,
-                    port=int(EMAIL_PORT),
-                    username=EMAIL_HOST_USER,
-                    password=EMAIL_HOST_PASSWORD,
-                    use_tls=EMAIL_USE_TLS == "1",
-                    use_ssl=EMAIL_USE_SSL == "1",
-                )
-
                 msg = EmailMultiAlternatives(
                     subject=subject,
                     body=text_content,
                     from_email=EMAIL_FROM,
                     to=[receiver.email],
-                    connection=connection,
                 )
                 msg.attach_alternative(html_content, "text/html")
-                msg.send()
+                send_smtp_message(msg)
                 logging.getLogger("plane.worker").info("Email Sent Successfully")
 
                 # Update the logs
