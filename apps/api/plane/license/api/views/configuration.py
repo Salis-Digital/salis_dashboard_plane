@@ -12,7 +12,7 @@ from smtplib import (
 )
 
 # Django imports
-from django.core.mail import BadHeaderError, EmailMultiAlternatives, get_connection
+from django.core.mail import BadHeaderError, EmailMultiAlternatives
 from django.db.models import Q, Case, When, Value
 
 # Third party imports
@@ -27,6 +27,7 @@ from plane.license.api.serializers import InstanceConfigurationSerializer
 from plane.license.utils.encryption import encrypt_data
 from plane.utils.cache import cache_response, invalidate_cache
 from plane.license.utils.instance_value import get_email_configuration
+from plane.utils.smtp import SMTPNotConfiguredError, send_smtp_message
 
 
 class InstanceConfigurationEndpoint(BaseAPIView):
@@ -115,39 +116,23 @@ class EmailCredentialCheckEndpoint(BaseAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        (
-            EMAIL_HOST,
-            EMAIL_HOST_USER,
-            EMAIL_HOST_PASSWORD,
-            EMAIL_PORT,
-            EMAIL_USE_TLS,
-            EMAIL_USE_SSL,
-            EMAIL_FROM,
-        ) = get_email_configuration()
-
-        # Configure all the connections
-        connection = get_connection(
-            host=EMAIL_HOST,
-            port=int(EMAIL_PORT),
-            username=EMAIL_HOST_USER,
-            password=EMAIL_HOST_PASSWORD,
-            use_tls=EMAIL_USE_TLS == "1",
-            use_ssl=EMAIL_USE_SSL == "1",
-        )
-        # Prepare email details
-        subject = "Email Notification from Plane"
-        message = "This is a sample email notification sent from Plane application."
-        # Send the email
+        EMAIL_FROM = get_email_configuration()[-1]
+        subject = "Email Notification from Salis"
+        message = "This is a sample email notification sent from the Salis Plane application."
         try:
             msg = EmailMultiAlternatives(
                 subject=subject,
                 body=message,
                 from_email=EMAIL_FROM,
                 to=[receiver_email],
-                connection=connection,
             )
-            msg.send(fail_silently=False)
+            send_smtp_message(msg)
             return Response({"message": "Email successfully sent."}, status=status.HTTP_200_OK)
+        except SMTPNotConfiguredError:
+            return Response(
+                {"error": "SMTP is not configured. Save host and port before sending a test email."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         except BadHeaderError:
             return Response({"error": "Invalid email header."}, status=status.HTTP_400_BAD_REQUEST)
         except SMTPAuthenticationError:

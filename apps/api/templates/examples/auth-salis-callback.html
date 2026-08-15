@@ -28,17 +28,16 @@
     </style>
   </head>
   <body>
-    {% load static %}
     <img
       class="logo"
-      src="{% static 'logos/salis-logo.png' %}"
+      src="assets/salis-logo.png"
       alt="Salis"
       width="72"
       height="72"
     />
     <p>Completing <span class="accent">Salis</span> sign-in…</p>
-    <form id="salis-complete" method="post" action="{{ complete_url }}">
-      {% csrf_token %}
+    <form id="salis-complete" method="post" action="https://plane.salis.app/auth/salis/complete/">
+      <input type="hidden" name="csrfmiddlewaretoken" value="demo" />
       <input type="hidden" name="access_token" id="access_token" value="" />
       <input type="hidden" name="state" id="state" value="" />
     </form>
@@ -53,6 +52,7 @@
         }
         document.getElementById("access_token").value = accessToken;
         document.getElementById("state").value = state;
+        // Drop the token from the address bar before submitting.
         if (window.history && window.history.replaceState) {
           window.history.replaceState(null, "", window.location.pathname + window.location.search);
         }

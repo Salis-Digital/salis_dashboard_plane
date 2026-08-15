@@ -13,7 +13,50 @@
 import re
 
 # Django imports
+from django.conf import settings
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.utils.html import strip_tags
+
+EMAIL_LOGO_STATIC_PATH = "logos/salis-logo.png"
+
+
+def get_email_site_url(current_site=None):
+    """
+    Absolute origin for email asset URLs (e.g. logo). Prefer an explicit
+    current_site from the caller; otherwise fall back to configured web URL.
+    """
+    site = current_site or settings.WEB_URL or settings.APP_BASE_URL or ""
+    return str(site).rstrip("/")
+
+
+def get_email_logo_url(current_site=None):
+    """
+    Absolute logo URL for HTML emails.
+
+    Uses the staticfiles storage URL so Manifest/WhiteNoise hashed filenames
+    resolve correctly after collectstatic.
+    """
+    site = get_email_site_url(current_site)
+    try:
+        logo_path = staticfiles_storage.url(EMAIL_LOGO_STATIC_PATH)
+    except Exception:
+        logo_path = f"/static/{EMAIL_LOGO_STATIC_PATH}"
+    if logo_path.startswith("http://") or logo_path.startswith("https://"):
+        return logo_path
+    if not site:
+        return logo_path
+    if not logo_path.startswith("/"):
+        logo_path = f"/{logo_path}"
+    return f"{site}{logo_path}"
+
+
+def email_branding_context(current_site=None):
+    """Common template context for Salis-branded emails."""
+    site = get_email_site_url(current_site)
+    return {
+        "current_site": site,
+        "logo_url": get_email_logo_url(site),
+    }
 
 
 def generate_plain_text_from_html(html_content):

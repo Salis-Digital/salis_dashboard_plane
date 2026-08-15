@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Reset your Salis password</title>
+    <title>Sam invited you to Platform Launch on Salis Plane</title>
 
     <style>
       /* Basic resets for email clients */
@@ -40,6 +40,10 @@
           padding: 0 20px 16px 20px !important;
         }
       }
+
+      *[class="gmail-fix"] {
+        display: none !important;
+      }
     </style>
   </head>
 
@@ -73,7 +77,8 @@
         visibility: hidden;
       "
     >
-      Reset your Salis password with this secure link.
+      Sam has invited you to the Platform Launch project in
+      Salis Digital on Salis Plane.
     </span>
 
     <!-- Outer Wrapper -->
@@ -85,7 +90,6 @@
       <table role="presentation" width="100%">
         <tr>
           <td></td>
-
           <td
             class="email-container"
             width="620"
@@ -99,7 +103,7 @@
               <tr>
                 <td style="padding: 24px 40px; text-align: center;">
                   <img
-                    src="{{ logo_url }}"
+                    src="assets/salis-logo.png"
                     width="120"
                     alt="Salis"
                     style="height: auto; display: block; margin: 0 auto;"
@@ -108,16 +112,14 @@
               </tr>
             </table>
           </td>
-
           <td></td>
         </tr>
       </table>
 
-      <!-- BODY (card under header) -->
+      <!-- BODY -->
       <table role="presentation" width="100%">
         <tr>
           <td></td>
-
           <td
             class="email-container"
             width="620"
@@ -132,14 +134,14 @@
               <tr>
                 <td
                   style="
+                    padding: 24px;
                     font-size: 16px;
                     line-height: 1.5;
                     color: #474747;
-                    padding: 24px;
                   "
                 >
                   <!-- ========================================= -->
-                  <!--        PLANE RESET PASSWORD EMAIL         -->
+                  <!--     PLANE PROJECT INVITE – MAIN COPY      -->
                   <!-- ========================================= -->
 
                   <!-- Heading -->
@@ -152,27 +154,28 @@
                       color: #111111;
                     "
                   >
-                    Reset your Salis password
+                    You've been invited to the Platform Launch project on Salis Plane
                   </h1>
 
-                  <!-- Intro copy -->
-                  <p style="margin: 0 0 16px;">
-                    We received a request to reset your Salis password. To reset
-                    your password, click the button below.
+                  <!-- Intro text -->
+                  <p style="margin: 0 0 12px;">
+                    Sam has invited you to work with them in
+                    <strong>Platform Launch</strong> in the workspace
+                    <strong>Salis Digital</strong> on Salis Plane.
                   </p>
 
-                  <!-- Primary button -->
+                  <!-- CTA button -->
                   <table
                     role="presentation"
                     cellspacing="0"
                     cellpadding="0"
                     border="0"
-                    style="margin: 0 0 24px;"
+                    style="margin: 16px 0 24px;"
                   >
                     <tr>
                       <td>
                         <a
-                          href="{{forgot_password_url}}"
+                          href="https://plane.salis.app/salis/projects/demo/issues"
                           target="_blank"
                           style="
                             background-color: #1080bc;
@@ -187,7 +190,7 @@
                             white-space: nowrap;
                           "
                         >
-                          Reset password
+                          Go to project
                         </a>
                       </td>
                     </tr>
@@ -225,8 +228,9 @@
                         border: 1px solid #e9e9e9;
                         word-break: break-all;
                       "
-                      >{{forgot_password_url}}</span
                     >
+                      https://plane.salis.app/salis/projects/demo/issues
+                    </span>
                   </p>
 
                   <!-- Note -->
@@ -248,24 +252,24 @@
                         border-radius: 3px;
                         border: 1px solid #e9e9e9;
                       "
-                      >{{email}}</span
-                    >. If you weren’t expecting a password reset, you can safely
+                    >
+                      alex@example.com
+                    </span>.
+                    If you weren’t expecting this invitation, you can safely
                     ignore this email.
                   </p>
                 </td>
               </tr>
             </table>
           </td>
-
           <td></td>
         </tr>
       </table>
 
-      <!-- FOOTER (simple, aligned with body) -->
+      <!-- FOOTER -->
       <table role="presentation" width="100%">
         <tr>
           <td></td>
-
           <td
             class="email-container"
             width="620"
@@ -288,14 +292,11 @@
                     text-align: left;
                   "
                 >
-                  <p style="margin: 0;">
-                    Salis
-                  </p>
+                  <p style="margin: 0;">Salis</p>
                 </td>
               </tr>
             </table>
           </td>
-
           <td></td>
         </tr>
       </table>
