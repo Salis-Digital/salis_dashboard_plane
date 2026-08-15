@@ -26,7 +26,7 @@ class Command(BaseCommand):
             raise CommandError("Receiver email is required")
 
         EMAIL_FROM = get_email_configuration()[-1]
-        subject = "Test email from Plane"
+        subject = "Test email from Salis"
 
         html_content = render_to_string("emails/test_email.html")
         text_content = strip_tags(html_content)
