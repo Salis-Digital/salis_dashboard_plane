@@ -199,6 +199,12 @@ salis_config_variables = [
         "category": "SALIS",
         "is_encrypted": False,
     },
+    {
+        "key": "SALIS_AUTH_QUERY_PARAMS",
+        "value": os.environ.get("SALIS_AUTH_QUERY_PARAMS", ""),
+        "category": "SALIS",
+        "is_encrypted": False,
+    },
 ]
 
 smtp_config_variables = [

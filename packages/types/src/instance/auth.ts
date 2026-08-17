@@ -63,7 +63,8 @@ export type TInstanceSalisAuthenticationConfigurationKeys =
   | "SALIS_IAM_HOST"
   | "SALIS_API_BASE"
   | "SALIS_TENANT_ID"
-  | "SALIS_REDIRECT_URI";
+  | "SALIS_REDIRECT_URI"
+  | "SALIS_AUTH_QUERY_PARAMS";
 
 export type TInstanceAuthenticationConfigurationKeys =
   | TInstanceGoogleAuthenticationConfigurationKeys

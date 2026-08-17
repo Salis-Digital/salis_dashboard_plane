@@ -81,6 +81,11 @@ class TestEmailCredentialCheckEndpoint:
 
         assert response.status_code == status.HTTP_200_OK
         mock_send.assert_called_once()
+        msg = mock_send.call_args[0][0]
+        assert msg.alternatives
+        html = msg.alternatives[0][0]
+        assert 'src="cid:salis-logo"' in html
+        assert 'alt="Salis"' in html
 
     @patch("plane.license.api.views.configuration.send_smtp_message")
     @patch(

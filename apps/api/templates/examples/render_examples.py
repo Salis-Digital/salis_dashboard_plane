@@ -48,6 +48,7 @@ FILES = [
 def sample_context() -> dict:
     return {
         "current_site": SITE,
+        "logo_url": LOGO_REL,
         "code": "847291",
         "email": "alex@example.com",
         "first_name": "Alex",
@@ -123,6 +124,7 @@ def main() -> None:
         html = engine.from_string(raw).render(Context(ctx, autoescape=True))
         html = html.replace(f"{SITE}/static/logos/salis-logo.png", LOGO_REL)
         html = html.replace("/static/logos/salis-logo.png", LOGO_REL)
+        html = html.replace("cid:salis-logo", LOGO_REL)
         (OUT / out_name).write_text(html)
         index_items.append((out_name, rel))
         print("wrote", out_name)

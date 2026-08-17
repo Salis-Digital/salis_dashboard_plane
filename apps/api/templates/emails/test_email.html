@@ -1,6 +1,76 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
-<html>
-    <p>This is a test email sent to verify if email configuration is working as expected in your Salis Plane instance.</p>
-
-<p>Regards,</br> Team Salis </p>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Salis email test</title>
+    <style>
+      body,
+      table,
+      td,
+      p {
+        margin: 0;
+        padding: 0;
+      }
+      img {
+        border: 0;
+        line-height: 100%;
+        text-decoration: none;
+        -ms-interpolation-mode: bicubic;
+        object-fit: cover;
+      }
+      table {
+        border-collapse: collapse;
+      }
+    </style>
+  </head>
+  <body
+    bgcolor="#f9f9f9"
+    style="
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #474747;
+      background-color: #f9f9f9;
+    "
+  >
+    <center style="width: 100%; background-color: #f9f9f9; padding: 40px 0;">
+      <table role="presentation" width="100%">
+        <tr>
+          <td></td>
+          <td width="620" style="width: 620px; max-width: 620px; margin: 0 auto;">
+            <table role="presentation" width="100%" style="background-color: #0f0f0f;">
+              <tr>
+                <td style="padding: 24px 40px; text-align: center;">
+                  <img
+                    src="{{ logo_url }}"
+                    width="120"
+                    height="120"
+                    alt="Salis"
+                    style="display: block; width: 120px; height: 120px; object-fit: cover; margin: 0 auto;"
+                  />
+                </td>
+              </tr>
+            </table>
+            <table
+              role="presentation"
+              width="100%"
+              style="background-color: #ffffff; padding: 32px 40px;"
+            >
+              <tr>
+                <td style="font-size: 16px; line-height: 1.5; color: #474747; padding: 8px 0 24px;">
+                  <p style="margin: 0 0 16px;">
+                    This is a test email sent to verify email configuration on your Salis Plane
+                    instance.
+                  </p>
+                  <p style="margin: 0;">If you can see the Salis logo above, images are working.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td></td>
+        </tr>
+      </table>
+    </center>
+  </body>
 </html>

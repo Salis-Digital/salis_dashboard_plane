@@ -14,6 +14,7 @@ from smtplib import (
 # Django imports
 from django.core.mail import BadHeaderError, EmailMultiAlternatives
 from django.db.models import Q, Case, When, Value
+from django.template.loader import render_to_string
 
 # Third party imports
 from rest_framework import status
@@ -27,6 +28,7 @@ from plane.license.api.serializers import InstanceConfigurationSerializer
 from plane.license.utils.encryption import encrypt_data
 from plane.utils.cache import cache_response, invalidate_cache
 from plane.license.utils.instance_value import get_email_configuration
+from plane.utils.email import email_branding_context, generate_plain_text_from_html
 from plane.utils.smtp import SMTPNotConfiguredError, send_smtp_message
 
 
@@ -118,14 +120,16 @@ class EmailCredentialCheckEndpoint(BaseAPIView):
 
         EMAIL_FROM = get_email_configuration()[-1]
         subject = "Email Notification from Salis"
-        message = "This is a sample email notification sent from the Salis Plane application."
+        html_content = render_to_string("emails/test_email.html", email_branding_context())
+        text_content = generate_plain_text_from_html(html_content)
         try:
             msg = EmailMultiAlternatives(
                 subject=subject,
-                body=message,
+                body=text_content,
                 from_email=EMAIL_FROM,
                 to=[receiver_email],
             )
+            msg.attach_alternative(html_content, "text/html")
             send_smtp_message(msg)
             return Response({"message": "Email successfully sent."}, status=status.HTTP_200_OK)
         except SMTPNotConfiguredError:
