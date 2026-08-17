@@ -7,7 +7,7 @@ import base64
 import json
 import os
 from datetime import datetime
-from urllib.parse import urlencode
+from urllib.parse import parse_qsl, urlencode
 
 import pytz
 import requests
@@ -28,6 +28,29 @@ from plane.utils.exception_logger import log_exception
 def _b64url_decode(segment: str) -> bytes:
     padding = "=" * (-len(segment) % 4)
     return base64.urlsafe_b64decode(segment + padding)
+
+
+# OAuth authorize params that extra query config must not override.
+RESERVED_AUTH_QUERY_KEYS = frozenset({"response_type", "client_id", "redirect_uri", "scope", "state"})
+
+
+def parse_extra_auth_query_params(raw: str | None) -> dict[str, str]:
+    """Parse extra IAM authorize query params from God Mode / env.
+
+    Accepts ``a=1&b=2`` (with or without a leading ``?``). Reserved OAuth
+    keys are ignored so client_id / redirect_uri / state stay authoritative.
+    """
+    if not raw:
+        return {}
+    query = str(raw).strip()
+    if query.startswith("?"):
+        query = query[1:]
+    parsed: dict[str, str] = {}
+    for key, value in parse_qsl(query, keep_blank_values=True):
+        if not key or key.lower() in RESERVED_AUTH_QUERY_KEYS:
+            continue
+        parsed[key] = value
+    return parsed
 
 
 def decode_jwt_payload(token: str) -> dict:
@@ -61,6 +84,7 @@ class SalisOAuthProvider(Adapter):
             SALIS_API_BASE,
             SALIS_TENANT_ID,
             SALIS_REDIRECT_URI,
+            SALIS_AUTH_QUERY_PARAMS,
         ) = get_configuration_value(
             [
                 {
@@ -82,6 +106,10 @@ class SalisOAuthProvider(Adapter):
                 {
                     "key": "SALIS_REDIRECT_URI",
                     "default": os.environ.get("SALIS_REDIRECT_URI", ""),
+                },
+                {
+                    "key": "SALIS_AUTH_QUERY_PARAMS",
+                    "default": os.environ.get("SALIS_AUTH_QUERY_PARAMS", ""),
                 },
             ]
         )
@@ -106,6 +134,7 @@ class SalisOAuthProvider(Adapter):
             self.redirect_uri = f"{scheme}://{request.get_host()}/auth/salis/callback/"
 
         url_params = {
+            **parse_extra_auth_query_params(SALIS_AUTH_QUERY_PARAMS),
             "response_type": "token",
             "client_id": self.client_id,
             "redirect_uri": self.redirect_uri,

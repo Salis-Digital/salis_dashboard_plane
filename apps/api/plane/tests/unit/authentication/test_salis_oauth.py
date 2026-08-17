@@ -9,7 +9,7 @@ import json
 
 import pytest
 
-from plane.authentication.provider.oauth.salis import decode_jwt_payload
+from plane.authentication.provider.oauth.salis import decode_jwt_payload, parse_extra_auth_query_params
 
 
 def _encode_segment(payload: dict) -> str:
@@ -33,3 +33,22 @@ class TestSalisJwtDecode:
     def test_decode_jwt_payload_returns_empty_for_invalid_token(self):
         assert decode_jwt_payload("not-a-jwt") == {}
         assert decode_jwt_payload("") == {}
+
+
+@pytest.mark.unit
+class TestSalisAuthQueryParams:
+    def test_parse_extra_auth_query_params_reads_pairs(self):
+        parsed = parse_extra_auth_query_params("?kc_idp_hint=google&prompt=login")
+        assert parsed == {"kc_idp_hint": "google", "prompt": "login"}
+
+    def test_parse_extra_auth_query_params_ignores_reserved_keys(self):
+        parsed = parse_extra_auth_query_params(
+            "client_id=attacker&redirect_uri=https://evil.example&kc_idp_hint=google"
+        )
+        assert parsed == {"kc_idp_hint": "google"}
+        assert "client_id" not in parsed
+        assert "redirect_uri" not in parsed
+
+    def test_parse_extra_auth_query_params_empty(self):
+        assert parse_extra_auth_query_params("") == {}
+        assert parse_extra_auth_query_params(None) == {}

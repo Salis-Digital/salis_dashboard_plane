@@ -5,10 +5,10 @@
 from django.core.mail import EmailMultiAlternatives
 from django.core.management import BaseCommand, CommandError
 from django.template.loader import render_to_string
-from django.utils.html import strip_tags
 
 # Module imports
 from plane.license.utils.instance_value import get_email_configuration
+from plane.utils.email import email_branding_context, generate_plain_text_from_html
 from plane.utils.smtp import send_smtp_message
 
 
@@ -28,8 +28,8 @@ class Command(BaseCommand):
         EMAIL_FROM = get_email_configuration()[-1]
         subject = "Test email from Salis"
 
-        html_content = render_to_string("emails/test_email.html")
-        text_content = strip_tags(html_content)
+        html_content = render_to_string("emails/test_email.html", email_branding_context())
+        text_content = generate_plain_text_from_html(html_content)
 
         self.stdout.write(self.style.SUCCESS("Trying to send test email..."))
 

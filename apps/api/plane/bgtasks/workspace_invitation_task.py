@@ -50,7 +50,6 @@ def workspace_invitation(email, workspace_id, token, current_site, inviter):
         }
 
         html_content = render_to_string("emails/invitations/workspace_invitation.html", context)
-
         text_content = generate_plain_text_from_html(html_content)
 
         workspace_member_invite.message = text_content

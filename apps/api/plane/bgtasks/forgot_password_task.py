@@ -38,7 +38,6 @@ def forgot_password(first_name, email, uidb64, token, current_site):
         }
 
         html_content = render_to_string("emails/auth/forgot_password.html", context)
-
         text_content = generate_plain_text_from_html(html_content)
 
         msg = EmailMultiAlternatives(

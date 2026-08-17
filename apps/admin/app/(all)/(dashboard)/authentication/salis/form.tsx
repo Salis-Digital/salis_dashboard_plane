@@ -46,6 +46,7 @@ export function InstanceSalisConfigForm(props: Props) {
       SALIS_API_BASE: config["SALIS_API_BASE"] || "https://api2.saalees.com",
       SALIS_TENANT_ID: config["SALIS_TENANT_ID"] || "91",
       SALIS_REDIRECT_URI: config["SALIS_REDIRECT_URI"] || "",
+      SALIS_AUTH_QUERY_PARAMS: config["SALIS_AUTH_QUERY_PARAMS"] || "",
     },
   });
 
@@ -108,6 +109,23 @@ export function InstanceSalisConfigForm(props: Props) {
       error: Boolean(errors.SALIS_REDIRECT_URI),
       required: false,
     },
+    {
+      key: "SALIS_AUTH_QUERY_PARAMS",
+      type: "text",
+      label: "Login query parameters",
+      description: (
+        <>
+          Extra query string appended to the IAM authorize URL (for example{" "}
+          <CodeBlock darkerShade>kc_idp_hint=google&amp;prompt=login</CodeBlock>). Do not include{" "}
+          <CodeBlock darkerShade>client_id</CodeBlock>, <CodeBlock darkerShade>redirect_uri</CodeBlock>,{" "}
+          <CodeBlock darkerShade>scope</CodeBlock>, or <CodeBlock darkerShade>state</CodeBlock> — those are set
+          automatically.
+        </>
+      ),
+      placeholder: "kc_idp_hint=google",
+      error: Boolean(errors.SALIS_AUTH_QUERY_PARAMS),
+      required: false,
+    },
   ];
 
   const SALIS_SERVICE_DETAILS: TCopyField[] = [
@@ -138,6 +156,7 @@ export function InstanceSalisConfigForm(props: Props) {
         SALIS_API_BASE: response.find((item) => item.key === "SALIS_API_BASE")?.value,
         SALIS_TENANT_ID: response.find((item) => item.key === "SALIS_TENANT_ID")?.value,
         SALIS_REDIRECT_URI: response.find((item) => item.key === "SALIS_REDIRECT_URI")?.value,
+        SALIS_AUTH_QUERY_PARAMS: response.find((item) => item.key === "SALIS_AUTH_QUERY_PARAMS")?.value,
       });
     } catch (err) {
       console.error(err);

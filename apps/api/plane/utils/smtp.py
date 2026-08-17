@@ -12,6 +12,7 @@ DATA immediately, then hang on quit(); that previously 504'd God Mode.
 from django.core.mail import get_connection
 
 from plane.license.utils.instance_value import get_email_configuration
+from plane.utils.email import attach_email_branding
 
 SMTP_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 SMTP_TIMEOUT = 20
@@ -77,6 +78,7 @@ def send_smtp_message(msg, *, timeout: int = SMTP_TIMEOUT):
     if not msg.from_email:
         msg.from_email = from_email
     msg.connection = connection
+    attach_email_branding(msg)
     try:
         connection.open()
         return msg.send(fail_silently=False)
