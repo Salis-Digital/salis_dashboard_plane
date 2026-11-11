@@ -6,7 +6,6 @@
 
 import { useEffect, useState } from "react";
 import { EModalPosition, EModalWidth, ModalCore } from "@plane/ui";
-import { getAssetIdFromUrl, checkURLValidity } from "@plane/utils";
 // plane ui
 // helpers
 // hooks
@@ -53,12 +52,12 @@ export function CreateProjectModal(props: Props) {
     setCurrentStep(EProjectCreationSteps.FEATURE_SELECTION);
   };
 
-  const handleCoverImageStatusUpdate = async (projectId: string, coverImage: string) => {
-    if (!checkURLValidity(coverImage)) {
-      await fileService.updateBulkProjectAssetsUploadStatus(workspaceSlug, projectId, projectId, {
-        asset_ids: [getAssetIdFromUrl(coverImage)],
-      });
-    }
+  const handleCoverImageStatusUpdate = async (projectId: string, assetId: string) => {
+    if (!assetId) return;
+
+    await fileService.updateBulkProjectAssetsUploadStatus(workspaceSlug, projectId, projectId, {
+      asset_ids: [assetId],
+    });
   };
 
   useKeypress("Escape", () => {

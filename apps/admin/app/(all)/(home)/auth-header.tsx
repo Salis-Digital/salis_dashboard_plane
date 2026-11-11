@@ -5,13 +5,13 @@
  */
 
 import Link from "next/link";
-import { PlaneLockup } from "@plane/propel/icons";
+import { PRODUCT_NAME } from "@plane/constants";
 
 export function AuthHeader() {
   return (
     <div className="sticky top-0 flex w-full flex-shrink-0 items-center justify-between gap-6">
-      <Link href="/">
-        <PlaneLockup height={20} width={95} className="text-primary" />
+      <Link href="/" className="text-h4-semibold text-primary">
+        {PRODUCT_NAME}
       </Link>
     </div>
   );

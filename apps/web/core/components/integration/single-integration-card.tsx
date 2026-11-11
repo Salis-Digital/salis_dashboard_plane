@@ -94,6 +94,7 @@ export const SingleIntegrationCard = observer(function SingleIntegrationCard({ i
           title: "Deleted successfully!",
           message: `${integration.title} integration deleted successfully.`,
         });
+        return undefined;
       })
       .catch(() => {
         setDeletingIntegration(false);
@@ -103,6 +104,7 @@ export const SingleIntegrationCard = observer(function SingleIntegrationCard({ i
           title: "Error!",
           message: `${integration.title} integration could not be deleted. Please try again.`,
         });
+        return undefined;
       });
   };
 

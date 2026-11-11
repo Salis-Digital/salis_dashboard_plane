@@ -43,7 +43,7 @@ export const AdminSidebarMenu = observer(function AdminSidebarMenu() {
                       "!bg-layer-transparent-active text-primary": isActive,
                       "text-secondary hover:bg-layer-transparent-hover active:bg-layer-transparent-active": !isActive,
                     },
-                    isSidebarCollapsed ? "justify-center" : "w-[260px]"
+                    isSidebarCollapsed ? "justify-center" : "w-full"
                   )}
                 >
                   {<item.Icon className="h-4 w-4 flex-shrink-0" />}

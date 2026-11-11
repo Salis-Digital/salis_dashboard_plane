@@ -16,7 +16,7 @@ import ProjectCommonAttributes from "@/components/project/create/common-attribut
 import ProjectCreateHeader from "@/components/project/create/header";
 import ProjectCreateButtons from "@/components/project/create/project-create-buttons";
 // hooks
-import { getCoverImageType, uploadCoverImage } from "@/helpers/cover-image.helper";
+import { getCoverImageType, uploadCoverImageWithAssetData, type TCoverImageType } from "@/helpers/cover-image.helper";
 import { useProject } from "@/hooks/store/use-project";
 import { usePlatformOS } from "@/hooks/use-platform-os";
 // plane web types
@@ -31,7 +31,7 @@ export type TCreateProjectFormProps = {
   handleNextStep: (projectId: string) => void;
   data?: Partial<TProject>;
   templateId?: string;
-  updateCoverImageStatus: (projectId: string, coverImage: string) => Promise<void>;
+  updateCoverImageStatus: (projectId: string, assetId: string) => Promise<void>;
 };
 
 export const CreateProjectForm = observer(function CreateProjectForm(props: TCreateProjectFormProps) {
@@ -64,43 +64,67 @@ export const CreateProjectForm = observer(function CreateProjectForm(props: TCre
     // Upper case identifier
     formData.identifier = formData.identifier?.toUpperCase();
     const coverImage = formData.cover_image_url;
-    let uploadedAssetUrl: string | null = null;
+    const coverImageType: TCoverImageType | null = coverImage ? getCoverImageType(coverImage) : null;
 
-    if (coverImage) {
-      const imageType = getCoverImageType(coverImage);
+    let createPayload: Partial<TProject>;
 
-      if (imageType === "local_static") {
+    if (coverImage && coverImageType === "local_static") {
+      const {
+        cover_image_url: _coverImageUrl,
+        cover_image: _coverImage,
+        cover_image_asset: _coverImageAsset,
+        ...projectFields
+      } = formData;
+      createPayload = projectFields;
+    } else if (coverImage) {
+      createPayload = { ...formData, cover_image: coverImage, cover_image_asset: null };
+    } else {
+      createPayload = { ...formData };
+    }
+
+    const linkCoverImageAfterCreate = async (projectId: string) => {
+      if (!coverImage) return;
+
+      if (coverImageType === "local_static") {
         try {
-          uploadedAssetUrl = await uploadCoverImage(coverImage, {
+          const uploadedAsset = await uploadCoverImageWithAssetData(coverImage, {
             workspaceSlug: workspaceSlug.toString(),
-            entityIdentifier: "",
+            projectId,
+            entityIdentifier: projectId,
             entityType: EFileAssetType.PROJECT_COVER,
             isUserAsset: false,
           });
-        } catch (error) {
-          console.error("Error uploading cover image:", error);
-          setToast({
-            type: TOAST_TYPE.ERROR,
-            title: t("toast.error"),
-            message: error instanceof Error ? error.message : "Failed to upload cover image",
-          });
-          return Promise.reject(error);
-        }
-      } else {
-        formData.cover_image = coverImage;
-        formData.cover_image_asset = null;
-      }
-    }
 
-    return createProject(workspaceSlug.toString(), formData)
-      .then(async (res) => {
-        if (uploadedAssetUrl) {
-          await updateCoverImageStatus(res.id, uploadedAssetUrl);
-          await updateProject(workspaceSlug.toString(), res.id, { cover_image_url: uploadedAssetUrl });
-        } else if (coverImage && coverImage.startsWith("http")) {
-          await updateCoverImageStatus(res.id, coverImage);
-          await updateProject(workspaceSlug.toString(), res.id, { cover_image_url: coverImage });
+          try {
+            await updateCoverImageStatus(projectId, uploadedAsset.assetId);
+          } catch (error) {
+            console.error("Failed to finalize project cover asset upload status:", error);
+          }
+
+          try {
+            await updateProject(workspaceSlug.toString(), projectId, { cover_image_url: uploadedAsset.assetUrl });
+          } catch (error) {
+            console.error("Failed to set project cover image after creation:", error);
+          }
+        } catch (error) {
+          console.error("Error uploading cover image after project creation:", error);
         }
+        return;
+      }
+
+      if (coverImage.startsWith("http")) {
+        try {
+          await updateProject(workspaceSlug.toString(), projectId, { cover_image_url: coverImage });
+        } catch (error) {
+          console.error("Failed to set project cover image after creation:", error);
+        }
+      }
+    };
+
+    return createProject(workspaceSlug.toString(), createPayload)
+      .then(async (res) => {
+        await linkCoverImageAfterCreate(res.id);
+
         setToast({
           type: TOAST_TYPE.SUCCESS,
           title: t("success"),

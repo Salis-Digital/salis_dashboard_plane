@@ -12,6 +12,7 @@ import { Circle } from "lucide-react";
 import {
   EUserPermissions,
   EUserPermissionsLevel,
+  IS_PROJECT_PUBLISH_ENABLED,
   SPACE_BASE_PATH,
   SPACE_BASE_URL,
   WORK_ITEM_TRACKER_ELEMENTS,
@@ -94,7 +95,7 @@ export const IssuesHeader = observer(function IssuesHeader() {
             </Tooltip>
           ) : null}
         </div>
-        {currentProjectDetails?.anchor ? (
+        {IS_PROJECT_PUBLISH_ENABLED && currentProjectDetails?.anchor ? (
           <a
             href={publishedURL}
             className="group flex items-center gap-1.5 rounded-sm bg-accent-primary/10 px-2.5 py-1 text-11 font-medium text-accent-primary"

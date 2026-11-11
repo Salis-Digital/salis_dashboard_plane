@@ -74,8 +74,9 @@ services:
 
   space:
     image: makeplane/plane-space:${APP_RELEASE:-stable}
+    # Disabled for Salis fork — set SPACE_REPLICAS>=1 and re-enable /spaces proxy to restore
     deploy:
-      replicas: ${SPACE_REPLICAS:-1}
+      replicas: ${SPACE_REPLICAS:-0}
       restart_policy:
         condition: any
     depends_on:
@@ -205,7 +206,7 @@ services:
 
   # Comment this if you using any external s3 compatible storage
   plane-minio:
-    image: minio/minio:latest
+    image: docker.io/pgsty/silo:RELEASE.2026-09-16T00-00-00Z
     command: server /export --console-address ":9090"
     deploy:
       replicas: 1

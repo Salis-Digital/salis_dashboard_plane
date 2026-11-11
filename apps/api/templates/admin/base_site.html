@@ -1,13 +1,13 @@
 {% extends "admin/base.html" %}{% load i18n %}
 
-{% block title %}{{ title }} | {% trans  'plane Admin' %} {% endblock %}
+{% block title %}{{ title }} | {% trans  'Salis Admin' %} {% endblock %}
 
 {% block branding %}
 
 <style type="text/css">
   #header
   {
-    background: #24292e;
+    background: #0F0F0F;
     color: #FFFFFF;
   }
   #site-name{
@@ -16,8 +16,17 @@
   #branding h1, #branding h1 a:link, #branding h1 a:visited {
     color: #FFFFFF;
 }
+  .button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: #DD4A48;
+  }
+  .button:active, input[type=submit]:active, input[type=button]:active, .button:focus, input[type=submit]:focus, input[type=button]:focus, .button:hover, input[type=submit]:hover, input[type=button]:hover {
+    background: #C94040;
+  }
+  a:link, a:visited {
+    color: #DD4A48;
+  }
 </style>
-<h1 id="site-name">{% trans 'Plane Django Admin'  %} </h1>
+<h1 id="site-name">{% trans 'Salis Django Admin'  %} </h1>
 
 
 {% endblock %}{% block nav-global %}{% endblock %}

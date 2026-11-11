@@ -205,7 +205,21 @@ export const uploadCoverImage = async (
     isUserAsset?: boolean;
   }
 ): Promise<string> => {
-  const { workspaceSlug, entityIdentifier, entityType, isUserAsset = false } = uploadConfig;
+  const result = await uploadCoverImageWithAssetData(imageUrl, uploadConfig);
+  return result.assetUrl;
+};
+
+export const uploadCoverImageWithAssetData = async (
+  imageUrl: string,
+  uploadConfig: {
+    workspaceSlug?: string;
+    projectId?: string;
+    entityIdentifier: string;
+    entityType: EFileAssetType;
+    isUserAsset?: boolean;
+  }
+): Promise<{ assetUrl: string; assetId: string }> => {
+  const { workspaceSlug, projectId, entityIdentifier, entityType, isUserAsset = false } = uploadConfig;
 
   // Fetch the local image
   const response = await fetch(imageUrl);
@@ -233,10 +247,29 @@ export const uploadCoverImage = async (
       },
       file
     );
-    return uploadResult.asset_url;
+    return {
+      assetUrl: uploadResult.asset_url,
+      assetId: uploadResult.asset_id,
+    };
   } else {
     if (!workspaceSlug) {
       throw new Error("Workspace slug is required for workspace asset upload");
+    }
+
+    if (projectId) {
+      const uploadResult = await fileService.uploadProjectAsset(
+        workspaceSlug,
+        projectId,
+        {
+          entity_identifier: entityIdentifier,
+          entity_type: entityType,
+        },
+        file
+      );
+      return {
+        assetUrl: uploadResult.asset_url,
+        assetId: uploadResult.asset_id,
+      };
     }
 
     const uploadResult = await fileService.uploadWorkspaceAsset(
@@ -247,7 +280,10 @@ export const uploadCoverImage = async (
       },
       file
     );
-    return uploadResult.asset_url;
+    return {
+      assetUrl: uploadResult.asset_url,
+      assetId: uploadResult.asset_id,
+    };
   }
 };
 

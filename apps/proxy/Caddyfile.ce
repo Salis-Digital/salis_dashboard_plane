@@ -3,8 +3,10 @@
 		max_size {$FILE_SIZE_LIMIT}
 	}
 
-  redir /spaces /spaces/ permanent
-	reverse_proxy /spaces/* space:3000
+  # /spaces proxy disabled for Salis fork (space service not started).
+  # To re-enable: uncomment the two lines below and start the space service.
+  # redir /spaces /spaces/ permanent
+  # reverse_proxy /spaces/* space:3000
 
   redir /god-mode /god-mode/ permanent
 	reverse_proxy /god-mode/* admin:3000

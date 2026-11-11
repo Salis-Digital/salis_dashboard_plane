@@ -10,10 +10,78 @@
 # NOTICE: Proprietary and confidential. Unauthorized use or distribution is prohibited.
 
 # Python imports
+import os
 import re
+from email.mime.image import MIMEImage
 
 # Django imports
+from django.conf import settings
+from django.contrib.staticfiles import finders
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.utils.html import strip_tags
+
+EMAIL_LOGO_STATIC_PATH = "logos/salis-logo.png"
+EMAIL_LOGO_CID = "salis-logo"
+
+
+def get_email_site_url(current_site=None):
+    """
+    Absolute origin for email asset URLs (e.g. logo). Prefer an explicit
+    current_site from the caller; otherwise fall back to configured web URL.
+    """
+    site = current_site or settings.WEB_URL or settings.APP_BASE_URL or ""
+    return str(site).rstrip("/")
+
+
+def get_email_logo_filepath():
+    """Filesystem path of the PNG logo shipped with the API."""
+    source_path = os.path.join(settings.BASE_DIR, "static", EMAIL_LOGO_STATIC_PATH)
+    if os.path.isfile(source_path):
+        return source_path
+    try:
+        stored = staticfiles_storage.path(EMAIL_LOGO_STATIC_PATH)
+        if stored and os.path.isfile(stored):
+            return stored
+    except Exception:
+        pass
+    found = finders.find(EMAIL_LOGO_STATIC_PATH)
+    if isinstance(found, (list, tuple)):
+        found = found[0] if found else None
+    if found and os.path.isfile(found):
+        return found
+    return None
+
+
+def get_email_logo_url(current_site=None):
+    """
+    Logo src for HTML emails.
+
+    Production `WEB_URL/static/...` is served as the web app HTML shell, and
+    hashed God Mode SVGs are not reliable in mail clients. Embed via CID.
+    """
+    return f"cid:{EMAIL_LOGO_CID}"
+
+
+def attach_email_branding(msg):
+    """Inline-attach the Salis logo so templates can use cid:salis-logo."""
+    path = get_email_logo_filepath()
+    if not path:
+        return False
+    with open(path, "rb") as logo_file:
+        image = MIMEImage(logo_file.read(), _subtype="png")
+    image.add_header("Content-ID", f"<{EMAIL_LOGO_CID}>")
+    image.add_header("Content-Disposition", "inline", filename="salis-logo.png")
+    msg.attach(image)
+    return True
+
+
+def email_branding_context(current_site=None):
+    """Common template context for Salis-branded emails."""
+    site = get_email_site_url(current_site)
+    return {
+        "current_site": site,
+        "logo_url": get_email_logo_url(site),
+    }
 
 
 def generate_plain_text_from_html(html_content):

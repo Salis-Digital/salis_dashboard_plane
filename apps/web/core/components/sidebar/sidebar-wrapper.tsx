@@ -16,9 +16,9 @@ import { CustomizeNavigationDialog } from "@/components/navigation/customize-nav
 import { useAppTheme } from "@/hooks/store/use-app-theme";
 import useSize from "@/hooks/use-window-size";
 // plane web components
-import { WorkspaceEditionBadge } from "@/components/workspace/edition-badge";
 import { AppSidebarToggleButton } from "./sidebar-toggle-button";
 import { IconButton } from "@plane/propel/icon-button";
+import { PlaneVersionNumber } from "../global/version-number";
 
 type TSidebarWrapperProps = {
   title: string;
@@ -31,21 +31,28 @@ export const SidebarWrapper = observer(function SidebarWrapper(props: TSidebarWr
   // state
   const [isCustomizeNavDialogOpen, setIsCustomizeNavDialogOpen] = useState(false);
   // store hooks
-  const { toggleSidebar, sidebarCollapsed } = useAppTheme();
+  const { toggleSidebar, sidebarCollapsed, isExtendedSidebarOpened, isExtendedProjectSidebarOpened } = useAppTheme();
   const windowSize = useSize();
   // refs
   const ref = useRef<HTMLDivElement>(null);
+  const prevWidthRef = useRef(windowSize[0]);
 
   useOutsideClickDetector(ref, () => {
+    const isExtendedOpen = !!isExtendedSidebarOpened || !!isExtendedProjectSidebarOpened;
+    // Extended "More" panel is a sibling outside this ref; ignore those clicks so Back
+    // only pops back to the main drawer instead of closing everything.
+    if (isExtendedOpen) return;
     if (sidebarCollapsed === false && window.innerWidth < 768) {
-      toggleSidebar();
+      toggleSidebar(true);
     }
   });
 
   useEffect(() => {
-    if (windowSize[0] < 768 && !sidebarCollapsed) toggleSidebar();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [windowSize]);
+    const width = windowSize[0];
+    const crossedIntoMobile = prevWidthRef.current >= 768 && width < 768;
+    if (crossedIntoMobile && !sidebarCollapsed) toggleSidebar(true);
+    prevWidthRef.current = width;
+  }, [windowSize, sidebarCollapsed, toggleSidebar]);
 
   return (
     <>
@@ -82,14 +89,9 @@ export const SidebarWrapper = observer(function SidebarWrapper(props: TSidebarWr
           {children}
         </ScrollArea>
         {/* Help Section */}
-        <div className="flex h-12 items-center justify-between border-t border-subtle bg-surface-1 p-3">
-          <WorkspaceEditionBadge />
-          {/* TODO: To be checked if we need this */}
-          {/* <div className="flex items-center gap-2">
-          {!shouldRenderAppRail && <HelpMenu />}
-          {!isAppRailEnabled && <AppSidebarToggleButton />}
-        </div> */}
-        </div>
+      </div>
+      <div className="border-t border-subtle px-3 py-2">
+        <PlaneVersionNumber />
       </div>
     </>
   );

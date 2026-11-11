@@ -22,6 +22,8 @@ type FormData = {
   confirmLeave: string;
 };
 
+const CONFIRM_LEAVE_TEXT = "Leave Project";
+
 const defaultValues: FormData = {
   projectName: "",
   confirmLeave: "",
@@ -46,50 +48,30 @@ export const LeaveProjectModal = observer(function LeaveProjectModal(props: ILea
     formState: { errors, isSubmitting },
     handleSubmit,
     reset,
+    watch,
   } = useForm({ defaultValues });
+
+  const canLeave = watch("projectName") === project?.name && watch("confirmLeave") === CONFIRM_LEAVE_TEXT;
 
   const handleClose = () => {
     reset({ ...defaultValues });
     onClose();
   };
 
-  const onSubmit = async (data: any) => {
-    if (!workspaceSlug) return;
+  const onSubmit = async () => {
+    if (!workspaceSlug || !canLeave) return;
 
-    if (data) {
-      if (data.projectName === project?.name) {
-        if (data.confirmLeave === "Leave Project") {
-          router.push(`/${workspaceSlug}/projects`);
-          return leaveProject(workspaceSlug.toString(), project.id)
-            .then(() => {
-              handleClose();
-            })
-            .catch((_err) => {
-              setToast({
-                type: TOAST_TYPE.ERROR,
-                title: "Error!",
-                message: "Something went wrong please try again later.",
-              });
-            });
-        } else {
-          setToast({
-            type: TOAST_TYPE.ERROR,
-            title: "Error!",
-            message: "Please confirm leaving the project by typing the 'Leave Project'.",
-          });
-        }
-      } else {
-        setToast({
-          type: TOAST_TYPE.ERROR,
-          title: "Error!",
-          message: "Please enter the project name as shown in the description.",
-        });
-      }
-    } else {
+    try {
+      await leaveProject(workspaceSlug.toString(), project.id);
+      handleClose();
+      router.push(`/${workspaceSlug}/projects`);
+    } catch (_err) {
       setToast({
         type: TOAST_TYPE.ERROR,
-        title: "Error!",
-        message: "Please fill all fields.",
+        title: "You can't leave this project yet.",
+        message:
+          (typeof _err === "object" && (_err as { error?: string })?.error) ||
+          "Something went wrong. Please try again.",
       });
     }
   };
@@ -122,7 +104,7 @@ export const LeaveProjectModal = observer(function LeaveProjectModal(props: ILea
             control={control}
             name="projectName"
             rules={{
-              required: "Label title is required",
+              required: "Project name is required",
             }}
             render={({ field: { value, onChange, ref } }) => (
               <Input
@@ -135,6 +117,7 @@ export const LeaveProjectModal = observer(function LeaveProjectModal(props: ILea
                 hasError={Boolean(errors.projectName)}
                 placeholder="Enter project name"
                 className="mt-2 w-full"
+                autoComplete="off"
               />
             )}
           />
@@ -142,7 +125,7 @@ export const LeaveProjectModal = observer(function LeaveProjectModal(props: ILea
 
         <div className="text-secondary">
           <p className="text-13">
-            To confirm, type <span className="font-medium text-primary">Leave Project</span> below:
+            To confirm, type <span className="font-medium text-primary">{CONFIRM_LEAVE_TEXT}</span> below:
           </p>
           <Controller
             control={control}
@@ -156,8 +139,9 @@ export const LeaveProjectModal = observer(function LeaveProjectModal(props: ILea
                 onChange={onChange}
                 ref={ref}
                 hasError={Boolean(errors.confirmLeave)}
-                placeholder="Enter 'leave project'"
+                placeholder={`Enter '${CONFIRM_LEAVE_TEXT}'`}
                 className="mt-2 w-full"
+                autoComplete="off"
               />
             )}
           />
@@ -166,7 +150,7 @@ export const LeaveProjectModal = observer(function LeaveProjectModal(props: ILea
           <Button variant="secondary" size="lg" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant="error-fill" size="lg" type="submit" loading={isSubmitting}>
+          <Button variant="error-fill" size="lg" type="submit" disabled={!canLeave} loading={isSubmitting}>
             {isSubmitting ? "Leaving..." : "Leave Project"}
           </Button>
         </div>

@@ -24,6 +24,7 @@ services:
 
   space:
     container_name: space
+    profiles: ["space"]
     build:
       context: .
       dockerfile: ./apps/space/Dockerfile.space
@@ -142,7 +143,7 @@ services:
 
   plane-minio:
     container_name: plane-minio
-    image: minio/minio
+    image: docker.io/pgsty/silo:RELEASE.2026-09-16T00-00-00Z
     restart: always
     command: server /export --console-address ":9090"
     volumes:

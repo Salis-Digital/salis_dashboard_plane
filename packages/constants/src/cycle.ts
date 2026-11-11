@@ -25,9 +25,9 @@ export const CYCLE_STATUS: {
     i18n_label: "project_cycles.status.yet_to_start",
     value: "upcoming",
     i18n_title: "project_cycles.status.yet_to_start",
-    color: "#3F76FF",
-    textColor: "text-blue-500",
-    bgColor: "bg-indigo-50",
+    color: "#DD4A48",
+    textColor: "text-accent-primary",
+    bgColor: "bg-accent-subtle",
   },
   {
     i18n_label: "project_cycles.status.completed",

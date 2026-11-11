@@ -29,6 +29,12 @@ const isValidURL = (url: string): boolean => {
   return !disallowedSchemes.test(url);
 };
 
+const LogoSpinnerScreen = () => (
+  <div className="relative flex h-screen w-full items-center justify-center">
+    <LogoSpinner />
+  </div>
+);
+
 export const AuthenticationWrapper = observer(function AuthenticationWrapper(props: TAuthenticationWrapper) {
   const pathname = usePathname();
   const router = useAppRouter();
@@ -78,18 +84,14 @@ export const AuthenticationWrapper = observer(function AuthenticationWrapper(pro
     return redirectionRoute;
   };
 
-  if ((isUserSWRLoading || isUserLoading || workspacesLoader) && !currentUser?.id)
-    return (
-      <div className="relative flex h-screen w-full items-center justify-center">
-        <LogoSpinner />
-      </div>
-    );
+  if ((isUserSWRLoading || isUserLoading || workspacesLoader) && !currentUser?.id) return <LogoSpinnerScreen />;
 
   if (pageType === EPageTypes.PUBLIC) return <>{children}</>;
 
   if (pageType === EPageTypes.NON_AUTHENTICATED) {
-    if (!currentUser?.id) return <>{children}</>;
-    else {
+    if (!currentUser?.id) {
+      return <>{children}</>;
+    } else {
       if (currentUserProfile?.id && isUserOnboard) {
         const currentRedirectRoute = getWorkspaceRedirectionUrl();
         router.push(currentRedirectRoute);

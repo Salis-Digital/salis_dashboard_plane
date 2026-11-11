@@ -11,7 +11,7 @@ export const MODULE_STATUS_COLORS: {
   [key in TModuleStatus]: string;
 } = {
   backlog: "#a3a3a2",
-  planned: "#3f76ff",
+  planned: "#dd4a48",
   paused: "#525252",
   completed: "#16a34a",
   cancelled: "#ef4444",
@@ -36,8 +36,8 @@ export const MODULE_STATUS: {
     i18n_label: "project_modules.status.planned",
     value: "planned",
     color: MODULE_STATUS_COLORS.planned,
-    textColor: "text-blue-500",
-    bgColor: "bg-indigo-50",
+    textColor: "text-accent-primary",
+    bgColor: "bg-accent-subtle",
   },
   {
     i18n_label: "project_modules.status.in_progress",

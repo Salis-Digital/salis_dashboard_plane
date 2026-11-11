@@ -4,6 +4,7 @@
 
 # Python imports
 import json
+import mimetypes
 import uuid
 
 # Django imports
@@ -27,6 +28,18 @@ from plane.settings.storage import S3Storage
 from plane.utils.path_validator import sanitize_filename
 from plane.bgtasks.storage_metadata_task import get_asset_object_metadata
 from plane.utils.host import base_host
+
+
+def resolve_attachment_mime_type(file_type, name):
+    """Fall back to a filename-based MIME type when the client type is missing or invalid."""
+    if (not file_type or file_type not in settings.ATTACHMENT_MIME_TYPES) and name:
+        guessed = mimetypes.guess_type(name)[0]
+        if guessed and guessed in settings.ATTACHMENT_MIME_TYPES:
+            return guessed
+        if guessed and guessed.startswith("text/"):
+            return "text/plain"
+        return "application/octet-stream"
+    return file_type
 
 
 class IssueAttachmentEndpoint(BaseAPIView):
@@ -101,6 +114,8 @@ class IssueAttachmentV2Endpoint(BaseAPIView):
         name = sanitize_filename(request.data.get("name")) or "unnamed"
         type = request.data.get("type", False)
         size = int(request.data.get("size", settings.FILE_SIZE_LIMIT))
+
+        type = resolve_attachment_mime_type(type, name)
 
         if not type or type not in settings.ATTACHMENT_MIME_TYPES:
             return Response(

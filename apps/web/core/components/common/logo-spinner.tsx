@@ -16,7 +16,8 @@ export function LogoSpinner() {
 
   return (
     <div className="flex items-center justify-center">
-      <img src={logoSrc} alt="logo" className="h-6 w-auto object-contain sm:h-11" />
+      {/* The animation is drawn inside a square canvas and only spans ~24% of its height, so the box is ~4x the intended mark height. */}
+      <img src={logoSrc} alt="logo" className="size-72 max-h-full max-w-full object-contain sm:size-80" />
     </div>
   );
 }

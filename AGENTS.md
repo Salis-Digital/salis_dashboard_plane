@@ -1,5 +1,7 @@
 # Agent Development Guide
 
+Absolute dos and don'ts for this fork: [docs/fork-guidelines.md](docs/fork-guidelines.md) (also enforced via `.cursor/rules/fork-dos-and-donts.mdc`).
+
 ## Commands
 
 - `pnpm dev` - Start all dev servers (web:3000, admin:3001)

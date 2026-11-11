@@ -7,7 +7,7 @@
 import React, { useEffect } from "react";
 import { observer } from "mobx-react";
 import { useParams, useLocation, Link, useNavigate } from "react-router";
-import { EUserPermissionsLevel, EUserPermissions } from "@plane/constants";
+import { EUserPermissionsLevel, EUserPermissions, IS_PROJECT_PUBLISH_ENABLED } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { TabNavigationList, TabNavigationItem } from "@plane/propel/tab-navigation";
 import type { EUserProjectRoles } from "@plane/types";
@@ -167,7 +167,13 @@ export const TabNavigationRoot = observer(function TabNavigationRoot(props: TTab
 
   return (
     <>
-      <PublishProjectModal isOpen={publishModalOpen} projectId={projectId} onClose={() => handlePublishModal(false)} />
+      {IS_PROJECT_PUBLISH_ENABLED && (
+        <PublishProjectModal
+          isOpen={publishModalOpen}
+          projectId={projectId}
+          onClose={() => handlePublishModal(false)}
+        />
+      )}
       <LeaveProjectModal
         project={project}
         isOpen={leaveProjectModalOpen}
