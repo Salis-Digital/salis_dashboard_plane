@@ -46,9 +46,9 @@ jobs:
           - image: plane-frontend
             dockerfile: ./apps/web/Dockerfile.web
             context: .
-          - image: plane-space
-            dockerfile: ./apps/space/Dockerfile.space
-            context: .
+          # - image: plane-space
+          #   dockerfile: ./apps/space/Dockerfile.space
+          #   context: .
           - image: plane-admin
             dockerfile: ./apps/admin/Dockerfile.admin
             context: .

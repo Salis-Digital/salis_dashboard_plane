@@ -50,7 +50,7 @@ export const useCoreOAuthConfig = (oauthActionText: string): TOAuthConfigs => {
   const oAuthOptions: TOAuthOption[] = [
     {
       id: "salis",
-      text: `${oauthActionText} with Salis`,
+      text: `${oauthActionText} with IAM Salis`,
       icon: <SalisMark />,
       onClick: () => {
         window.location.assign(`${API_BASE_URL}/auth/salis/${next_path ? `?next_path=${next_path}` : ``}`);
